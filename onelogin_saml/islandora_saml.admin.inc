@@ -2,30 +2,30 @@
 
 /**
  * @file
- * Admin page callbacks for the onelogin_saml module.
+ * Admin page callbacks for the islandora_saml module.
  */
 
 /**
- * Menu callback: displays the onelogin_saml module settings page.
+ * Menu callback: displays the islandora_saml module settings page.
  *
  * @ingroup forms
  *
- * @see onelogin_saml_form_validate()
+ * @see islandora_saml_form_validate()
  */
 /**
  * Configuration menu of OneLogin SAML
  */
-function onelogin_saml_form() {
+function islandora_saml_form() {
 
   $form = array();
 
   $form['saml_onelogin'] = array(
     '#type' => 'fieldset',
-    '#title' => t('ONELOGIN SAML/SSO SETTINGS')    
+    '#title' => t('SAML/SSO SETTINGS')
   );
 
   $form['saml_onelogin']['info'] = array(
-    '#markup' => t('Configure your SAML Service Provider below. Once configured, you can access the metadata <a target="_blank" href="'.url('onelogin_saml/metadata', array('absolute' => true)).'">here</a>.<br>Further information for OneLogin customers can be found <a target="_blank" href="https://onelogin.zendesk.com/hc/en-us/articles/201173604-Configuring-SAML-for-Drupal">here</a>.')
+    '#markup' => t('Configure your SAML Service Provider below. Once configured, you can access the metadata <a target="_blank" href="'.url('islandora_saml/metadata', array('absolute' => true)).'">here</a>.')
   );
 
   // IDENTITY PROVIDER SETTINGS
@@ -143,7 +143,7 @@ function onelogin_saml_form() {
   );
 
   $form['saml_attr_mapping']['info'] = array(
-    '#markup' => t('<p>Sometimes the names of the attributes sent by the IdP not match the names used by Drupal for the user accounts. In this section we can set the mapping between IdP fields and Drupal fields. Notice that this mapping could be also set at Onelogin\'s IdP.</p>')
+    '#markup' => t('<p>Sometimes the names of the attributes sent by the IdP not match the names used by Drupal for the user accounts. In this section we can set the mapping between IdP fields and Drupal fields.</p>')
   );
 
   $form['saml_attr_mapping']['saml_attr_mapping_username'] = array(
@@ -442,9 +442,9 @@ function search_admin_settings($form) {
 }
 
 /**
- * Form validation handler for onelogin_saml_form().
+ * Form validation handler for islandora_saml_form().
  */
-function onelogin_saml_form_validate($form, &$form_state) {
+function islandora_saml_form_validate($form, &$form_state) {
   if (empty($form_state['values']['saml_advanced_settings_sp_entity_id'])) {
     $form_state['values']['saml_advanced_settings_sp_entity_id'] = 'php-saml';
   }

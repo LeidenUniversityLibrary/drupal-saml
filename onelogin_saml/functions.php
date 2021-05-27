@@ -1,6 +1,6 @@
 <?php
 
-function onelogin_saml_sso() {
+function islandora_saml_sso() {
 
   if (isset($_GET['destination'])) {
     $target = $_GET['destination'];
@@ -10,7 +10,7 @@ function onelogin_saml_sso() {
 
   // If a user initiates a login while they are already logged in, simply send them to desired place.
   if (user_is_logged_in() && !user_is_anonymous()) {
-    if (isset($target) && strpos($target, 'onelogin_saml/sso') === FALSE) {
+    if (isset($target) && strpos($target, 'islandora_saml/sso') === FALSE) {
       drupal_goto($target);
     } else {
       drupal_goto('');
@@ -18,7 +18,7 @@ function onelogin_saml_sso() {
   }
 
   $auth = initialize_saml();
-  if (isset($target) && strpos($target, 'onelogin_saml/sso') === FALSE) {
+  if (isset($target) && strpos($target, 'islandora_saml/sso') === FALSE) {
     $auth->login($target);
   } else {
     $auth->login();
@@ -26,16 +26,39 @@ function onelogin_saml_sso() {
   exit();
 }
 
-function onelogin_saml_slo() {
+function islandora_saml_slo() {
   global $cookie_domain, $user;
 
   session_destroy();
   $auth = initialize_saml();
-  $auth->logout('/');
+  
+  $returnTo = null;
+  $parameters = array();
+  $nameId = null;
+  $sessionIndex = null;
+  $nameIdFormat = null;
+  $nameIdNameQualifier = null;
+  $nameIdSPNameQualifier = null;
+  
+  if (isset($_SESSION['samlNameId'])) {
+    $nameId = $_SESSION['samlNameId'];
+  }
+  if (isset($_SESSION['samlSessionIndex'])) {
+    $sessionIndex = $_SESSION['samlSessionIndex'];
+  }
+  if (isset($_SESSION['samlNameIdFormat'])) {
+    $nameIdFormat = $_SESSION['samlNameIdFormat'];
+  }
+  if (isset($_SESSION['samlNameIdNameQualifier'])) {
+    $nameIdNameQualifier = $_SESSION['samlNameIdNameQualifier'];
+  }
+  
+  $auth->logout($returnTo, $parameters, $nameId, $sessionIndex, false, $nameIdFormat, $nameIdNameQualifier);
+  
   exit();
 }
 
-function onelogin_saml_acs() {
+function islandora_saml_acs() {
   global $user;
 
   if (isset($_POST['RelayState'])) {
@@ -48,7 +71,7 @@ function onelogin_saml_acs() {
 
   // If a user initiates a login while they are already logged in, simply send them to their profile.
   if (user_is_logged_in() && !user_is_anonymous()) {
-    if (isset($target) && strpos($target, 'onelogin_saml/sso') === FALSE && strpos($target, 'onelogin_saml/acs') === FALSE) {
+    if (isset($target) && strpos($target, 'islandora_saml/sso') === FALSE && strpos($target, 'islandora_saml/acs') === FALSE) {
       drupal_goto($target);
     } else {
       drupal_goto('');
@@ -58,6 +81,13 @@ function onelogin_saml_acs() {
     $auth = initialize_saml();
 
     $auth->processResponse();
+    
+    // Store SAML response for SAML logout request
+    $_SESSION['samlUserdata'] = $auth->getAttributes();
+    $_SESSION['samlNameId'] = $auth->getNameId();
+    $_SESSION['samlNameIdFormat'] = $auth->getNameIdFormat();
+    $_SESSION['samlNameIdNameQualifier'] = $auth->getNameIdNameQualifier();
+    $_SESSION['samlSessionIndex'] = $auth->getSessionIndex();
 
     $errors = $auth->getErrors();
     if (!empty($errors)) {
@@ -68,21 +98,21 @@ function onelogin_saml_acs() {
       }
       drupal_set_message("There was at least one error processing the SAML Response<br>".implode("<br>", $errors).$debugError, 'error', FALSE);
     } else {
-      onelogin_saml_auth($auth);
+      islandora_saml_auth($auth);
     }
   }
   else {
     drupal_set_message("No SAML Response found.", 'error', FALSE);
   }
 
-  if (isset($target) && strpos($target, 'onelogin_saml/sso') === FALSE && strpos($target, 'onelogin_saml/acs') === FALSE) {
+  if (isset($target) && strpos($target, 'islandora_saml/sso') === FALSE && strpos($target, 'islandora_saml/acs') === FALSE) {
     drupal_goto($target);
   } else {
     drupal_goto('');
   }
 }
 
-function onelogin_saml_sls() {
+function islandora_saml_sls() {
   $auth = initialize_saml();
   $auth->processSLO();
   $errors = $auth->getErrors();
@@ -101,7 +131,7 @@ function onelogin_saml_sls() {
   drupal_goto('');
 }
 
-function onelogin_saml_metadata() {
+function islandora_saml_metadata() {
   $auth = initialize_saml();
   $settings = $auth->getSettings();
   $metadata = $settings->getSPMetadata();
@@ -110,7 +140,7 @@ function onelogin_saml_metadata() {
   exit();
 }
 
-function onelogin_saml_auth($auth) {
+function islandora_saml_auth($auth) {
   $username = '';
   $email = '';
   $autocreate = variable_get('saml_options_autocreate', FALSE);

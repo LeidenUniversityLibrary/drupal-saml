@@ -337,7 +337,8 @@ class OneLogin_Saml2_Auth
      */
     public function getAttributes()
     {
-        return $this->_attributes;
+        return
+          ;
     }
 
     /**

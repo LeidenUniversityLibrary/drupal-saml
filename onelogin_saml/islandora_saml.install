@@ -2,13 +2,13 @@
 
 /**
  * @file
- * the install file for the onelogin_saml module
+ * the install file for the islandora_saml module
  */
 
 /**
  * Implements hook_install().
  */
-function onelogin_saml_install() {
+function islandora_saml_install() {
   // User won't be able to change his username, prevent possible problems
   user_role_revoke_permissions(DRUPAL_AUTHENTICATED_RID, array('change own username'));
 }
@@ -16,7 +16,7 @@ function onelogin_saml_install() {
 /**
  * Implements hook_uninstall().
  */
-function onelogin_saml_uninstall() {
+function islandora_saml_uninstall() {
   // Remove the created system variables.
   variable_del('saml_idp_entityid');
   variable_del('saml_idp_sso');

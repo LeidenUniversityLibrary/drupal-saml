@@ -8,7 +8,7 @@ files[] = functions.php
 files[] = settings.php
 files[] = _toolkit_loader.php
 
-configure = admin/config/onelogin_saml
+configure = admin/config/islandora_saml
 
 version = "2.3.0"
 
