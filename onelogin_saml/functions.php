@@ -29,7 +29,6 @@ function islandora_saml_sso() {
 function islandora_saml_slo() {
   global $cookie_domain, $user;
 
-  session_destroy();
   $auth = initialize_saml();
   
   $returnTo = null;
@@ -54,7 +53,9 @@ function islandora_saml_slo() {
   }
   
   $auth->logout($returnTo, $parameters, $nameId, $sessionIndex, false, $nameIdFormat, $nameIdNameQualifier);
-  
+ 
+  session_destroy();
+ 
   exit();
 }
 
