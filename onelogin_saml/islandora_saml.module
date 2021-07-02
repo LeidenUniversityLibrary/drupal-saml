@@ -26,7 +26,7 @@ function islandora_saml_menu(){
 
   $items['admin/config/people/islandora_saml'] = array(
     'title' => 'Configure SAML',
-    'description' => 'This SAML plugin allows you to authenticate Drupal users against OneLogin or a third party SAML Identity Provider (IdP). OneLogin is pre-integrated with thousands of apps and handles all of your SSO needs in the cloud and behind the firewall. OneLogin also offers increased security using YubiKeys or VeriSign VIP Access.',
+    'description' => 'This SAML plugin allows you to authenticate Drupal users against a third party SAML Identity Provider (IdP). ',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('islandora_saml_form'),
     'access arguments' => array('config saml'),
