@@ -12,6 +12,7 @@ $settings = array (
     ),
     'singleLogoutService' => array (
       'url' => url('islandora_saml/sls', array('absolute' => true)),
+      'binding' => OneLogin_Saml2_Constants::BINDING_HTTP_POST
     ),
     'NameIDFormat' => variable_get('saml_advanced_settings_nameid_format', 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress'),
     'x509cert' => variable_get('saml_advanced_settings_sp_x509cert', ''),
