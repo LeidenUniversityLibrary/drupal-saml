@@ -232,7 +232,7 @@ class OneLogin_Saml2_Auth
     
     
     if (isset($_POST['SAMLResponse'])) {
-      $logoutResponse = new OneLogin_Saml2_LogoutResponse($this->_settings, $_GET['SAMLResponse'], OneLogin_Saml2_Constants::BINDING_HTTP_POST);
+      $logoutResponse = new OneLogin_Saml2_LogoutResponse($this->_settings, $_POST['SAMLResponse'], OneLogin_Saml2_Constants::BINDING_HTTP_POST);
       $this->_lastResponse = $logoutResponse->getXML();
       if (!$logoutResponse->isValid($requestId, $retrieveParametersFromServer)) {
         $this->_errors[] = 'invalid_logout_response';
