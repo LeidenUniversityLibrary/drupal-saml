@@ -224,13 +224,12 @@ class OneLogin_Saml2_Auth
    * @return string|null
    *
    * @throws OneLogin_Saml2_Error
-   * @throws OneLogin_Saml2_ValidationError
    */
   public function processSLO($keepLocalSession = false, $requestId = null, $retrieveParametersFromServer = false, $cbDeleteSession = null, $stay = false) {
     $this->_errors = array();
     $this->_errorReason = null;
     
-    
+    // Process HTTP-POST SLO
     if (isset($_POST['SAMLResponse'])) {
       $logoutResponse = new OneLogin_Saml2_LogoutResponse($this->_settings, $_POST['SAMLResponse'], OneLogin_Saml2_Constants::BINDING_HTTP_POST);
       $this->_lastResponse = $logoutResponse->getXML();
@@ -253,6 +252,7 @@ class OneLogin_Saml2_Auth
         }
       }
     }
+    // Process HTTP-REDIRECT SLO
     else if (isset($_GET['SAMLResponse'])) {
       $logoutResponse = new OneLogin_Saml2_LogoutResponse($this->_settings, $_GET['SAMLResponse'], OneLogin_Saml2_Constants::BINDING_HTTP_REDIRECT);
       $this->_lastResponse = $logoutResponse->getXML();
@@ -275,6 +275,7 @@ class OneLogin_Saml2_Auth
         }
       }
     }
+    // Process Logout request
     else if (isset($_GET['SAMLRequest'])) {
       $logoutRequest = new OneLogin_Saml2_LogoutRequest($this->_settings, $_GET['SAMLRequest'], OneLogin_Saml2_Constants::BINDING_HTTP_REDIRECT);
       $this->_lastRequest = $logoutRequest->getXML();
