@@ -219,20 +219,50 @@ class OneLogin_Saml2_Auth
     /**
      * Process the SAML Logout Response / Logout Request sent by the IdP.
      *
-     * @param bool        $keepLocalSession             When false will destroy the local session, otherwise will keep it
-     * @param string|null $requestId                    The ID of the LogoutRequest sent by this SP to the IdP
-     * @param bool        $retrieveParametersFromServer True if we want to use parameters from $_SERVER to validate the signature
-     * @param callable    $cbDeleteSession              Callback to be executed to delete session
-     * @param bool        $stay                         True if we want to stay (returns the url string) False to redirect
+     * @param bool $keepLocalSession When false will destroy the local session, otherwise will keep it
+     * @param string|null $requestId The ID of the LogoutRequest sent by this SP to the IdP
+     * @param bool $retrieveParametersFromServer True if we want to use parameters from $_SERVER to validate the signature
+     * @param callable $cbDeleteSession Callback to be executed to delete session
+     * @param bool $stay True if we want to stay (returns the url string) False to redirect
      *
      * @return string|null
      *
      * @throws OneLogin_Saml2_Error
+     * @throws OneLogin_Saml2_ValidationError
      */
     public function processSLO($keepLocalSession = false, $requestId = null, $retrieveParametersFromServer = false, $cbDeleteSession = null, $stay = false)
     {
         $this->_errors = array();
         $this->_errorReason = null;
+
+        if (isset($_POST['SAMLResponse'])) {
+            // AuthnResponse -- HTTP_POST Binding
+            $logoutResponse = new OneLogin_Saml2_Response($this->_settings, $_POST['SAMLResponse']);
+            $this->_lastResponse = $logoutResponse->getXMLDocument();
+
+            if (!$logoutResponse->isValid($requestId)) {
+                $this->_errors[] = 'invalid_logout_response';
+                $this->_errorReason = $logoutResponse->getError();
+            } else if ($logoutResponse->checkStatus() !== OneLogin_Saml2_Constants::STATUS_SUCCESS) {
+                $this->_errors[] = 'logout_not_success';
+            } else {
+                $this->_lastMessageId = $logoutResponse->getId();
+                if (!$keepLocalSession) {
+                    if ($cbDeleteSession === null) {
+                        OneLogin_Saml2_Utils::deleteLocalSession();
+                    } else {
+                        call_user_func($cbDeleteSession);
+                    }
+                }
+            }
+        } else {
+            $this->_errors[] = 'invalid_binding';
+            throw new OneLogin_Saml2_Error(
+                'SAML Response not found, Only supported HTTP_POST Binding',
+                OneLogin_Saml2_Error::SAML_RESPONSE_NOT_FOUND
+            );
+        }
+
         if (isset($_GET['SAMLResponse'])) {
             $logoutResponse = new OneLogin_Saml2_LogoutResponse($this->_settings, $_GET['SAMLResponse']);
             $this->_lastResponse = $logoutResponse->getXML();
