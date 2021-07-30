@@ -229,32 +229,22 @@ class OneLogin_Saml2_Auth
     $this->_errors = array();
     $this->_errorReason = null;
     
-    // Process HTTP-POST SLO
-    if (isset($_POST['SAMLResponse'])) {
-      $logoutResponse = new OneLogin_Saml2_LogoutResponse($this->_settings, $_POST['SAMLResponse'], OneLogin_Saml2_Constants::BINDING_HTTP_POST);
-      $this->_lastResponse = $logoutResponse->getXML();
-      if (!$logoutResponse->isValid($requestId, $retrieveParametersFromServer)) {
-        $this->_errors[] = 'invalid_logout_response';
-        $this->_errorReason = $logoutResponse->getError();
+    // Process HTTP-POST or HTTP-Redirect SLO
+    if (isset($_POST['SAMLResponse']) || isset($_GET['SAMLResponse'])) {
+      
+      $binding_slo = null;
+      
+      // HTTP-POST Binding
+      if(isset($_POST['SAMLResponse'])){
+        $binding_slo = OneLogin_Saml2_Constants::BINDING_HTTP_POST;
       }
-      else if ($logoutResponse->getStatus() !== OneLogin_Saml2_Constants::STATUS_SUCCESS) {
-        $this->_errors[] = 'logout_not_success';
+      // HTTP-Redirect Binding
+      if(isset($_GET['SAMLResponse'])){
+        $binding_slo = OneLogin_Saml2_Constants::BINDING_HTTP_REDIRECT;
       }
-      else {
-        $this->_lastMessageId = $logoutResponse->id;
-        if (!$keepLocalSession) {
-          if ($cbDeleteSession === null) {
-            OneLogin_Saml2_Utils::deleteLocalSession();
-          }
-          else {
-            call_user_func($cbDeleteSession);
-          }
-        }
-      }
-    }
-    // Process HTTP-REDIRECT SLO
-    else if (isset($_GET['SAMLResponse'])) {
-      $logoutResponse = new OneLogin_Saml2_LogoutResponse($this->_settings, $_GET['SAMLResponse'], OneLogin_Saml2_Constants::BINDING_HTTP_REDIRECT);
+  
+      $logoutResponse = new OneLogin_Saml2_LogoutResponse($this->_settings, $_POST['SAMLResponse'], $binding_slo);
+      
       $this->_lastResponse = $logoutResponse->getXML();
       if (!$logoutResponse->isValid($requestId, $retrieveParametersFromServer)) {
         $this->_errors[] = 'invalid_logout_response';
