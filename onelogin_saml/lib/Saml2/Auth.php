@@ -293,7 +293,7 @@ class OneLogin_Saml2_Auth
         }
         $inResponseTo = $logoutRequest->id;
         $this->_lastMessageId = $logoutRequest->id;
-        $responseBuilder = new OneLogin_Saml2_LogoutResponse($this->_settings, OneLogin_Saml2_Constants::BINDING_HTTP_REDIRECT,null);
+        $responseBuilder = new OneLogin_Saml2_LogoutResponse($this->_settings, $binding_slo,null);
         $responseBuilder->build($inResponseTo);
         $this->_lastResponse = $responseBuilder->getXML();
         
