@@ -41,18 +41,20 @@ class OneLogin_Saml2_LogoutResponse
    * load the Logout Response.
    *
    * @param OneLogin_Saml2_Settings $settings Settings.
+   * @param string $binding SLO binding.
    * @param string|null $response An UUEncoded SAML Logout response from the IdP.
    *
    * @throws OneLogin_Saml2_Error
    */
-  public function __construct(OneLogin_Saml2_Settings $settings, $response = null, $type) {
+  public function __construct(OneLogin_Saml2_Settings $settings, $binding, $response = null ) {
     $this->_settings = $settings;
+  
+    $baseURL = $this->_settings->getBaseURL();
+    if (!empty($baseURL)) {
+      OneLogin_Saml2_Utils::setBaseURL($baseURL);
+    }
     
-    if ($type = OneLogin_Saml2_Constants::BINDING_HTTP_REDIRECT) {
-      $baseURL = $this->_settings->getBaseURL();
-      if (!empty($baseURL)) {
-        OneLogin_Saml2_Utils::setBaseURL($baseURL);
-      }
+    if ($binding == OneLogin_Saml2_Constants::BINDING_HTTP_REDIRECT) {
       
       if ($response) {
         $decoded = base64_decode($response);
@@ -81,10 +83,6 @@ class OneLogin_Saml2_LogoutResponse
     
     if ($type = OneLogin_Saml2_Constants::BINDING_HTTP_POST) {
       
-      $baseURL = $this->_settings->getBaseURL();
-      if (!empty($baseURL)) {
-        OneLogin_Saml2_Utils::setBaseURL($baseURL);
-      }
       if ($response) {
         $decoded = base64_decode($response);
         $inflated = @gzinflate($decoded);

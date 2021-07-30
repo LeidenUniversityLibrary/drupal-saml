@@ -229,21 +229,25 @@ class OneLogin_Saml2_Auth
     $this->_errors = array();
     $this->_errorReason = null;
     
+    $binding_slo = null;
+    
+    // HTTP-POST Binding
+    if (isset($_POST['SAMLResponse']) || isset($_POST['SAMLRequest'])) {
+      $binding_slo = OneLogin_Saml2_Constants::BINDING_HTTP_POST;
+    }
+    // HTTP-Redirect Binding
+    if (isset($_GET['SAMLResponse']) || isset($_GET['SAMLRequest'])) {
+      $binding_slo = OneLogin_Saml2_Constants::BINDING_HTTP_REDIRECT;
+    }
+    
+    
     // Process HTTP-POST or HTTP-Redirect SLO
     if (isset($_POST['SAMLResponse']) || isset($_GET['SAMLResponse'])) {
-      
-      $binding_slo = null;
-      
-      // HTTP-POST Binding
-      if(isset($_POST['SAMLResponse'])){
-        $binding_slo = OneLogin_Saml2_Constants::BINDING_HTTP_POST;
-      }
-      // HTTP-Redirect Binding
-      if(isset($_GET['SAMLResponse'])){
-        $binding_slo = OneLogin_Saml2_Constants::BINDING_HTTP_REDIRECT;
-      }
   
-      $logoutResponse = new OneLogin_Saml2_LogoutResponse($this->_settings, $_POST['SAMLResponse'], $binding_slo);
+      // Get the SAML response
+      $samlResponse = isset($_GET['SAMLResponse'])?$_GET['SAMLResponse']:$_POST['SAMLResponse'];
+      
+      $logoutResponse = new OneLogin_Saml2_LogoutResponse($this->_settings, $binding_slo,$samlResponse);
       
       $this->_lastResponse = $logoutResponse->getXML();
       if (!$logoutResponse->isValid($requestId, $retrieveParametersFromServer)) {
@@ -266,8 +270,13 @@ class OneLogin_Saml2_Auth
       }
     }
     // Process Logout request
-    else if (isset($_GET['SAMLRequest'])) {
-      $logoutRequest = new OneLogin_Saml2_LogoutRequest($this->_settings, $_GET['SAMLRequest'], OneLogin_Saml2_Constants::BINDING_HTTP_REDIRECT);
+    else if (isset($_GET['SAMLRequest']) || isset($_POST['SAMLRequest'])) {
+  
+      // Get the SAML request
+      $samlRequest = isset($_GET['SAMLRequest'])?$_GET['SAMLRequest']:$_POST['SAMLRequest'];
+      
+      $logoutRequest = new OneLogin_Saml2_LogoutRequest($this->_settings, $binding_slo,$samlRequest);
+      
       $this->_lastRequest = $logoutRequest->getXML();
       if (!$logoutRequest->isValid($retrieveParametersFromServer)) {
         $this->_errors[] = 'invalid_logout_request';
@@ -284,7 +293,7 @@ class OneLogin_Saml2_Auth
         }
         $inResponseTo = $logoutRequest->id;
         $this->_lastMessageId = $logoutRequest->id;
-        $responseBuilder = new OneLogin_Saml2_LogoutResponse($this->_settings, null, OneLogin_Saml2_Constants::BINDING_HTTP_REDIRECT);
+        $responseBuilder = new OneLogin_Saml2_LogoutResponse($this->_settings, OneLogin_Saml2_Constants::BINDING_HTTP_REDIRECT,null);
         $responseBuilder->build($inResponseTo);
         $this->_lastResponse = $responseBuilder->getXML();
         
@@ -539,7 +548,7 @@ class OneLogin_Saml2_Auth
       $nameIdFormat = $this->_nameidFormat;
     }
     
-    $logoutRequest = new OneLogin_Saml2_LogoutRequest($this->_settings, null, $nameId, $sessionIndex, $nameIdFormat, $nameIdNameQualifier);
+    $logoutRequest = new OneLogin_Saml2_LogoutRequest($this->_settings, null,null, $nameId, $sessionIndex, $nameIdFormat, $nameIdNameQualifier);
     
     $this->_lastRequest = $logoutRequest->getXML();
     $this->_lastRequestID = $logoutRequest->id;
