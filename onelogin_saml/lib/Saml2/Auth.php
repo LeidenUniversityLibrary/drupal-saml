@@ -311,7 +311,12 @@ class OneLogin_Saml2_Auth
           $parameters['Signature'] = $signature;
         }
         
-        return $this->redirectTo($this->getSLOurl(), $parameters, $stay);
+        if($binding_slo == OneLogin_Saml2_Constants::BINDING_HTTP_POST)
+          $redirecTo = "https://login.uaccess-a.leidenuniv.nl/nidp/saml2/slo_return";
+        else
+          $redirecTo = $this->getSLOurl();
+        
+        return $this->redirectTo( $redirecTo, $parameters, $stay);
       }
     }
     else {
