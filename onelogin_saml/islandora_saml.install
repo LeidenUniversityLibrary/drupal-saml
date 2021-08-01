@@ -21,6 +21,7 @@ function islandora_saml_uninstall() {
   variable_del('saml_idp_entityid');
   variable_del('saml_idp_sso');
   variable_del('saml_idp_slo');
+  variable_del('saml_idp_slo_response');
   variable_del('saml_idp_x509cert');
   variable_del('saml_options_autocreate');
   variable_del('saml_options_syncroles');

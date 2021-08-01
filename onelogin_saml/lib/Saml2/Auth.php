@@ -272,7 +272,7 @@ class OneLogin_Saml2_Auth
     // Process Logout request
     else if (isset($_GET['SAMLRequest']) || isset($_POST['SAMLRequest'])) {
   
-      // Get the SAML request
+      // Get the SAML request either GET or POST
       $samlRequest = isset($_GET['SAMLRequest'])?$_GET['SAMLRequest']:$_POST['SAMLRequest'];
       
       $logoutRequest = new OneLogin_Saml2_LogoutRequest($this->_settings, $binding_slo,$samlRequest);
@@ -311,8 +311,11 @@ class OneLogin_Saml2_Auth
           $parameters['Signature'] = $signature;
         }
         
-        if($binding_slo == OneLogin_Saml2_Constants::BINDING_HTTP_POST)
-          $redirecTo = "https://login.uaccess-a.leidenuniv.nl/nidp/saml2/slo_return";
+        if($binding_slo == OneLogin_Saml2_Constants::BINDING_HTTP_POST){
+          $stay = true;
+          $redirecTo = $this->getResponseSLOurl();
+        }
+        
         else
           $redirecTo = $this->getSLOurl();
         
@@ -599,6 +602,30 @@ class OneLogin_Saml2_Auth
     $idpData = $this->_settings->getIdPData();
     if (isset($idpData['singleLogoutService']) && isset($idpData['singleLogoutService']['url'])) {
       $url = $idpData['singleLogoutService']['url'];
+    }
+    
+    return $url;
+  }
+  
+  /**
+   * Gets the SLO url.
+   *
+   * @return string|null The url of the Single Logout Service response location
+   *
+   * @throws OneLogin_Saml2_Error
+   */
+  public function getResponseSLOurl() {
+    $url = null;
+    $idpData = $this->_settings->getIdPData();
+    if (isset($idpData['singleLogoutService']) && isset($idpData['singleLogoutService']['response_url'])) {
+      $url = $idpData['singleLogoutService']['response_url'];
+    }
+    else {
+      $this->_errors[] = 'invalid_response';
+      throw new OneLogin_Saml2_Error(
+        'Idp Single Logout service response URL not found.Required for HTTP_POST binding',
+        OneLogin_Saml2_Error::SAML_LOGOUTMESSAGE_NOT_FOUND
+      );
     }
     
     return $url;

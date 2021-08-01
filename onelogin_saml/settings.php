@@ -26,6 +26,7 @@ $settings = array (
     ),
     'singleLogoutService' => array (
       'url' => variable_get('saml_idp_slo', ''),
+      'response_url' => variable_get('saml_idp_slo_response', ''),
     ),
     'x509cert' => variable_get('saml_idp_x509cert', ''),
   ),

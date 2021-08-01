@@ -69,6 +69,14 @@ function islandora_saml_form() {
     '#description' => t('URL target for the IdP where the SP will send the SLO Request. ("SLO Endpoint (HTTP)")'),
     '#required' => FALSE
   );
+  
+  $form['saml_idp']['saml_idp_slo_response'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Single Log Out Service Response Url'),
+    '#default_value' => variable_get('saml_idp_slo_response', ''),
+    '#description' => t('URL target for the IdP where the SP will send the SLO Response. ("SLO response Endpoint (HTTP)")'),
+    '#required' => FALSE
+  );
 
   $form['saml_idp']['saml_logout_link'] = array(
     '#type' => 'textfield',
