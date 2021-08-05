@@ -252,14 +252,17 @@ class OneLogin_Saml2_LogoutResponse
    * Generates a Logout Response object.
    *
    * @param string $inResponseTo InResponseTo value for the Logout Response.
+   *
+   * @throws Exception
    */
-  public function build($inResponseTo) {
+  public function build($inResponseTo,$binding_slo) {
     
     $spData = $this->_settings->getSPData();
     $idpData = $this->_settings->getIdPData();
     
     $this->id = OneLogin_Saml2_Utils::generateUniqueID();
     $issueInstant = OneLogin_Saml2_Utils::parseTime2SAML(time());
+    
     
     $spEntityId = htmlspecialchars($spData['entityId'], ENT_QUOTES);
     $logoutResponse = <<<LOGOUTRESPONSE
@@ -277,7 +280,14 @@ class OneLogin_Saml2_LogoutResponse
     </samlp:Status>
 </samlp:LogoutResponse>
 LOGOUTRESPONSE;
-    $this->_logoutResponse = $logoutResponse;
+   
+    if($binding_slo == OneLogin_Saml2_Constants::BINDING_HTTP_POST ){
+      $this->_logoutResponse = OneLogin_Saml2_Utils::addSign( $logoutResponse,$this->_settings->getSPkey(),$this->_settings->getSPcert());
+    }
+    else{
+      $this->_logoutResponse = $logoutResponse;
+    }
+    
   }
   
   /**

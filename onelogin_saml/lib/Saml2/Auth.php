@@ -224,11 +224,14 @@ class OneLogin_Saml2_Auth
    * @return string|null
    *
    * @throws OneLogin_Saml2_Error
+   *
+   * @throws Exception
    */
   public function processSLO($keepLocalSession = false, $requestId = null, $retrieveParametersFromServer = false, $cbDeleteSession = null, $stay = false) {
     $this->_errors = array();
     $this->_errorReason = null;
-    
+  
+    $parameters =array();
     $binding_slo = null;
     
     // HTTP-POST Binding
@@ -294,28 +297,27 @@ class OneLogin_Saml2_Auth
         $inResponseTo = $logoutRequest->id;
         $this->_lastMessageId = $logoutRequest->id;
         $responseBuilder = new OneLogin_Saml2_LogoutResponse($this->_settings, $binding_slo,null);
-        $responseBuilder->build($inResponseTo);
+        $responseBuilder->build($inResponseTo,$binding_slo);
         $this->_lastResponse = $responseBuilder->getXML();
         
         $logoutResponse = $responseBuilder->getResponse();
-        
-        $parameters = array('SAMLResponse' => $logoutResponse);
-        if (isset($_GET['RelayState'])) {
-          $parameters['RelayState'] = $_GET['RelayState'];
-        }
-        
-        $security = $this->_settings->getSecurityData();
-        if (isset($security['logoutResponseSigned']) && $security['logoutResponseSigned']) {
-          $signature = $this->buildResponseSignature($logoutResponse, isset($parameters['RelayState']) ? $parameters['RelayState'] : null, $security['signatureAlgorithm']);
-          $parameters['SigAlg'] = $security['signatureAlgorithm'];
-          $parameters['Signature'] = $signature;
+        if($binding_slo == OneLogin_Saml2_Constants::BINDING_HTTP_REDIRECT){
+          $parameters = array('SAMLResponse' => $logoutResponse);
+          if (isset($_GET['RelayState'])) {
+            $parameters['RelayState'] = $_GET['RelayState'];
+          }
+  
+          $security = $this->_settings->getSecurityData();
+          if (isset($security['logoutResponseSigned']) && $security['logoutResponseSigned']) {
+            $signature = $this->buildResponseSignature($logoutResponse, isset($parameters['RelayState']) ? $parameters['RelayState'] : null, $security['signatureAlgorithm']);
+            $parameters['SigAlg'] = $security['signatureAlgorithm'];
+            $parameters['Signature'] = $signature;
+          }
         }
         
         if($binding_slo == OneLogin_Saml2_Constants::BINDING_HTTP_POST){
-          $stay = true;
           $redirecTo = $this->getResponseSLOurl();
         }
-        
         else
           $redirecTo = $this->getSLOurl();
         
