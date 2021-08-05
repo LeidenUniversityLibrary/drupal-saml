@@ -322,22 +322,26 @@ class OneLogin_Saml2_Auth
           $encodedAuthNRequest = base64_encode($logoutResponse);
   
           $parameters = array(
-            'SAMLRequest' => $encodedAuthNRequest
+            'SAMLRequest' => $encodedAuthNRequest,
+            'RelayState' => $this->getSlOurl()
           );
+  
   
           $idpData = $this->_settings->getIdPData();
           $sloURL = $idpData['singleLogoutService']['response_url'];
   
-          // Now you need to send the data to the ssoURL using POST, You can use curl:
+          // Now you need to send the data to the sloURL using POST, You can use curl:
           $ch = curl_init();
 
           //url-ify the data for the POST
           $field_string = http_build_query($parameters);
-  
+          echo "Fields:<pre>";print_r($field_string);
           curl_setopt($ch, CURLOPT_URL, $sloURL);
           curl_setopt($ch, CURLOPT_POST, 1);
           curl_setopt($ch, CURLOPT_POSTFIELDS, $field_string);
           $result = curl_exec($ch);
+          echo " <br> Curl result:".$result;die;
+          
           curl_close($ch);
         }
         
