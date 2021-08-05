@@ -313,15 +313,35 @@ class OneLogin_Saml2_Auth
             $parameters['SigAlg'] = $security['signatureAlgorithm'];
             $parameters['Signature'] = $signature;
           }
+  
+          return $this->redirectTo( $this->getSlOurl(), $parameters, $stay);
         }
         
-        if($binding_slo == OneLogin_Saml2_Constants::BINDING_HTTP_POST){
-          $redirecTo = $this->getResponseSLOurl();
+        else if($binding_slo == OneLogin_Saml2_Constants::BINDING_HTTP_POST){
+  
+          $encodedAuthNRequest = base64_encode($logoutResponse);
+  
+          $parameters = array(
+            'SAMLRequest' => $encodedAuthNRequest
+          );
+  
+          $idpData = $this->_settings->getIdPData();
+          $sloURL = $idpData['singleLogoutService']['response_url'];
+  
+          // Now you need to send the data to the ssoURL using POST, You can use curl:
+          $ch = curl_init();
+
+          //url-ify the data for the POST
+          $field_string = http_build_query($parameters);
+  
+          curl_setopt($ch, CURLOPT_URL, $sloURL);
+          curl_setopt($ch, CURLOPT_POST, 1);
+          curl_setopt($ch, CURLOPT_POSTFIELDS, $field_string);
+          $result = curl_exec($ch);
+          curl_close($ch);
         }
-        else
-          $redirecTo = $this->getSLOurl();
         
-        return $this->redirectTo( $redirecTo, $parameters, $stay);
+        
       }
     }
     else {
