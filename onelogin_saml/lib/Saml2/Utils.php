@@ -297,7 +297,7 @@ class OneLogin_Saml2_Utils
      *
      * @throws OneLogin_Saml2_Error
      */
-    public static function redirect($url, $parameters = array(), $stay = false)
+    public static function redirect($url, $parameters = array(), $stay = false,$binding_slo = OneLogin_Saml2_Constants::BINDING_HTTP_REDIRECT)
     {
         assert('is_string($url)');
         assert('is_array($parameters)');
@@ -353,6 +353,10 @@ class OneLogin_Saml2_Utils
 
         header('Pragma: no-cache');
         header('Cache-Control: no-cache, must-revalidate');
+        if(isset($parameters['SAMLResponse'])){
+          header('Content-Type: text/xml');
+        }
+        
         header('Location: ' . $url);
         exit();
     }

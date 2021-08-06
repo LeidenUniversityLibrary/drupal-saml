@@ -234,6 +234,7 @@ class OneLogin_Saml2_Auth
     $parameters =array();
     $binding_slo = null;
     
+    
     // HTTP-POST Binding
     if (isset($_POST['SAMLResponse']) || isset($_POST['SAMLRequest'])) {
       $binding_slo = OneLogin_Saml2_Constants::BINDING_HTTP_POST;
@@ -315,30 +316,9 @@ class OneLogin_Saml2_Auth
             $parameters['SigAlg'] = $security['signatureAlgorithm'];
             $parameters['Signature'] = $signature;
           }
-  
-          return $this->redirectTo( $this->getSlOurl(), $parameters, $stay);
         }
         
-        else if($binding_slo == OneLogin_Saml2_Constants::BINDING_HTTP_POST){
-          
- 
-          /*// Now you need to send the data to the sloURL using POST, You can use curl:
-          $ch = curl_init();
-
-          //url-ify the data for the POST
-          $field_string = http_build_query($parameters);
-          echo "Fields:<pre>";print_r($field_string);
-          curl_setopt($ch, CURLOPT_URL, $sloURL);
-          curl_setopt($ch, CURLOPT_POST, 1);
-          curl_setopt($ch, CURLOPT_POSTFIELDS, $field_string);
-          $result = curl_exec($ch);
-          echo " <br> Curl result:".$result;die;
-          
-          curl_close($ch);*/
-  
-          return OneLogin_Saml2_Utils::postSloResponse($this->getResponseSLOurl(), $parameters);
-        }
-        
+        return $this->redirectTo( $this->getSlOurl(), $parameters, $stay);
         
       }
     }
