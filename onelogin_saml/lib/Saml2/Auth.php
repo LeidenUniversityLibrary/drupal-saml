@@ -316,9 +316,25 @@ class OneLogin_Saml2_Auth
             $parameters['SigAlg'] = $security['signatureAlgorithm'];
             $parameters['Signature'] = $signature;
           }
+  
+          return $this->redirectTo( $this->getSlOurl(), $parameters, $stay);
+        }
+        else{
+  
+          // Now you need to send the data to the ssoURL using POST, You can use curl:
+          $ch = curl_init();
+
+        //url-ify the data for the POST
+          $field_string = http_build_query($parameters);
+  
+          curl_setopt($ch, CURLOPT_URL, $this->getSlOurl());
+          curl_setopt($ch, CURLOPT_POST, 1);
+          curl_setopt($ch, CURLOPT_POSTFIELDS, $field_string);
+          $result = curl_exec($ch);
+          curl_close($ch);
         }
         
-        return $this->redirectTo( $this->getSlOurl(), $parameters, $stay);
+      
         
       }
     }
