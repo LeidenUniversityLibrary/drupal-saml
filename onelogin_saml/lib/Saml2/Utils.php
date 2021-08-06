@@ -355,10 +355,14 @@ class OneLogin_Saml2_Utils
         header('Cache-Control: no-cache, must-revalidate');
         if(isset($parameters['SAMLResponse'])){
           header('Content-Type: text/xml');
+          echo $parameters['SAMLResponse'];
+        }
+        else{
+          header('Location: ' . $url);
+          exit();
         }
         
-        header('Location: ' . $url);
-        exit();
+        
     }
   
   /**
