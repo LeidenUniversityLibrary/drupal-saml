@@ -336,7 +336,7 @@ class OneLogin_Saml2_Auth
           
           curl_close($ch);*/
   
-          return $this->redirectTo( $this->getResponseSLOurl(), $parameters, $stay);
+          return OneLogin_Saml2_Utils::postSloResponse($this->getResponseSLOurl(), $parameters);
         }
         
         
@@ -372,7 +372,7 @@ class OneLogin_Saml2_Auth
       $url = $_REQUEST['RelayState'];
     }
     
-    return OneLogin_Saml2_Utils::postSloResponse($url, $parameters);
+    return OneLogin_Saml2_Utils::redirect($url, $parameters, $stay);
   }
   
   /**
