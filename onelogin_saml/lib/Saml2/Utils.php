@@ -356,6 +356,41 @@ class OneLogin_Saml2_Utils
         header('Location: ' . $url);
         exit();
     }
+  
+  /**
+   * Executes a SLO POST response to the provided url .
+   *
+   * @param string       $url        The target url
+   * @param array        $parameters Extra parameters to be passed as part of the url
+   *
+   * @return string|null $url
+   *
+   * @throws OneLogin_Saml2_Error
+   */
+  
+  public static function postSloResponse($url, array $parameters) {
+    $query_content = http_build_query($parameters);
+    $fp = fopen($url, 'r', FALSE, // do not use_include_path
+      stream_context_create([
+        'http' => [
+          'header'  => [ // header array does not need '\r\n'
+                         'Content-type: application/x-www-form-urlencoded',
+                         'Content-Length: ' . strlen($query_content)
+          ],
+          'method'  => 'POST',
+          'content' => $query_content
+        ]
+      ]));
+    if ($fp === FALSE) {
+      throw new OneLogin_Saml2_Error(
+        'Redirect to invalid URL: ' . $url,
+        OneLogin_Saml2_Error::REDIRECT_INVALID_URL
+      );
+    }
+    $result = stream_get_contents($fp); // no maxlength/offset
+    fclose($fp);
+    return $result;
+  }
 
     /**
      * @var $protocolRegex string

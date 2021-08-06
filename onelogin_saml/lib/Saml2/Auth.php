@@ -301,13 +301,15 @@ class OneLogin_Saml2_Auth
         $this->_lastResponse = $responseBuilder->getXML();
         
         $logoutResponse = $responseBuilder->getResponse();
-        if($binding_slo == OneLogin_Saml2_Constants::BINDING_HTTP_REDIRECT){
-          $parameters = array('SAMLResponse' => $logoutResponse);
-          if (isset($_GET['RelayState'])) {
-            $parameters['RelayState'] = $_GET['RelayState'];
-          }
   
-          $security = $this->_settings->getSecurityData();
+        $parameters = array('SAMLResponse' => $logoutResponse);
+        
+        if (isset($_GET['RelayState'])) {
+          $parameters['RelayState'] = $_GET['RelayState'];
+        }
+        
+        if($binding_slo == OneLogin_Saml2_Constants::BINDING_HTTP_REDIRECT){
+            $security = $this->_settings->getSecurityData();
           if (isset($security['logoutResponseSigned']) && $security['logoutResponseSigned']) {
             $signature = $this->buildResponseSignature($logoutResponse, isset($parameters['RelayState']) ? $parameters['RelayState'] : null, $security['signatureAlgorithm']);
             $parameters['SigAlg'] = $security['signatureAlgorithm'];
@@ -318,14 +320,7 @@ class OneLogin_Saml2_Auth
         }
         
         else if($binding_slo == OneLogin_Saml2_Constants::BINDING_HTTP_POST){
-  
-          $encodedAuthNRequest = base64_encode($logoutResponse);
-  
-          $parameters = array(
-            'SAMLResponse' => $encodedAuthNRequest,
-            'RelayState' => $this->getSlOurl()
-          );
-  
+          
  
           /*// Now you need to send the data to the sloURL using POST, You can use curl:
           $ch = curl_init();
@@ -377,7 +372,7 @@ class OneLogin_Saml2_Auth
       $url = $_REQUEST['RelayState'];
     }
     
-    return OneLogin_Saml2_Utils::redirect($url, $parameters, $stay);
+    return OneLogin_Saml2_Utils::postSloResponse($url, $parameters);
   }
   
   /**
