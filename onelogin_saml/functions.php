@@ -82,7 +82,7 @@ function islandora_saml_acs() {
     $auth = initialize_saml();
 
     $auth->processResponse();
-    
+     
     // Store SAML response for SAML logout request
     $_SESSION['samlUserdata'] = $auth->getAttributes();
     $_SESSION['samlNameId'] = $auth->getNameId();
@@ -117,6 +117,7 @@ function islandora_saml_sls() {
   $auth = initialize_saml();
   $auth->processSLO();
   $errors = $auth->getErrors();
+  
   if (empty($errors)) {
       @session_destroy();
   }
@@ -156,7 +157,7 @@ function islandora_saml_auth($auth) {
 
   // Get SAML attributes
   $attrs = $auth->getAttributes();
-
+  
   $usernameFromEmail = variable_get('saml_options_username_from_email', FALSE);
 
   if (!empty($attrs)) {
