@@ -100,18 +100,21 @@ class OneLogin_Saml2_LogoutRequest
 
             $spEntityId = htmlspecialchars($spData['entityId'], ENT_QUOTES);
             $logoutRequest = <<<LOGOUTREQUEST
-<samlp:LogoutRequest
-    xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"
-    xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
-    ID="{$id}"
-    Version="2.0"
-    IssueInstant="{$issueInstant}"
-    Destination="{$idpData['singleLogoutService']['url']}">
-    <saml:Issuer>{$spEntityId}</saml:Issuer>
-    {$nameIdObj}
-    {$sessionIndexStr}
-</samlp:LogoutRequest>
+  <samlp:LogoutRequest
+      xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"
+      xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+      ID="{$id}"
+      Version="2.0"
+      IssueInstant="{$issueInstant}"
+      Destination="{$idpData['singleLogoutService']['url']}">
+      <saml:Issuer>{$spEntityId}</saml:Issuer>
+      {$nameIdObj}
+      {$sessionIndexStr}
+  </samlp:LogoutRequest>
 LOGOUTREQUEST;
+  
+          $logoutPostRequest = OneLogin_Saml2_Utils::addSign( $logoutRequest,$this->_settings->getSPkey(),$this->_settings->getSPcert());
+          
         } else {
   
             
