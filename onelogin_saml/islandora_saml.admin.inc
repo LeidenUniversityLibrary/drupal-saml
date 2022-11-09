@@ -128,11 +128,17 @@ function islandora_saml_form() {
     '#required' => FALSE
   );
 
+    # the values for the dropdown box
+    $form['saml_options']['saml_options_account_matcher_options'] = array(
+        '#type' => 'value',
+        '#value' => array('username' => t('username'),'email' => t('email'))
+    );
+
   $form['saml_options']['saml_options_account_matcher'] = array(
     '#type' => 'select',
     '#title' => t('Match Drupal account by'),
-    '#default_value' => variable_get('saml_options_account_matcher', t('username')),
-    '#options' => array(t('username'), t('email')),
+    '#default_value' => variable_get('saml_options_account_matcher', 'username'),
+    '#options' => $form['saml_options']['saml_options_account_matcher_options']['#value'],
     '#description' => t('Select what field will be used in order to find the user account. If you select the \'email\' field name remember to prevent that the user is able to change his mail in his profile.')
   );
 
