@@ -400,26 +400,26 @@ return system_settings_form($form);
 
 function addOne(array &$form, FormStateInterface $form_state)
 {
-    $name_field = $form_state->get('num_names');
+    $name_field = $form_state->get('saml_options_sp_acs_urls');
     $add_button = $name_field + 1;
-    $form_state->set('num_names', $add_button);
+    $form_state->set('saml_options_sp_acs_urls', $add_button);
     $form_state->setRebuild();
 }
 
 
 function addmoreCallback(array &$form, FormStateInterface $form_state)
 {
-    $name_field = $form_state->get('num_names');
-    return $form['names_fieldset'];
+    $name_field = $form_state->get('saml_options_sp_acs_urls');
+    return $form['saml_onelogin']['acs_urls_fieldset'];
 }
 
 
 function removeCallback(array &$form, FormStateInterface $form_state)
 {
-    $name_field = $form_state->get('num_names');
+    $name_field = $form_state->get('saml_options_sp_acs_urls');
     if ($name_field > 1) {
         $remove_button = $name_field - 1;
-        $form_state->set('num_names', $remove_button);
+        $form_state->set('saml_options_sp_acs_urls', $remove_button);
     }
     $form_state->setRebuild();
 }
