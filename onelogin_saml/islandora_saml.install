@@ -27,6 +27,7 @@ function islandora_saml_uninstall() {
   variable_del('saml_options_saml_link');
   variable_del('saml_options_slo');
   variable_del('saml_options_account_matcher');
+  variable_del('saml_options_sp_acs_urls');
   variable_del('saml_attr_mapping_username');
   variable_del('saml_attr_mapping_email');
   variable_del('saml_attr_mapping_role');
