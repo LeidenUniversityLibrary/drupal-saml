@@ -34,7 +34,7 @@ function islandora_saml_form()
     $form['saml_onelogin']['#tree'] = TRUE;
     $form['saml_onelogin']['acs_urls_fieldset'] = [
         '#type' => 'fieldset',
-        '#title' => $this->t('People coming to picnic'),
+        '#title' => t('People coming to picnic'),
         '#prefix' => '<div id="names-fieldset-wrapper">',
         '#suffix' => '</div>',
     ];
@@ -42,7 +42,7 @@ function islandora_saml_form()
     for ($i = 0; $i < $acs_urls_field; $i++) {
         $form['saml_onelogin']['acs_urls_fieldset']['url'][$i] = [
             '#type' => 'textfield',
-            '#title' => $this->t('Url'),
+            '#title' => t('Url'),
         ];
     }
     $form['actions'] = [
@@ -50,7 +50,7 @@ function islandora_saml_form()
     ];
     $form['saml_onelogin']['acs_urls_fieldset']['actions']['add_url'] = [
         '#type' => 'submit',
-        '#value' => $this->t('Add'),
+        '#value' => t('Add'),
         '#submit' => array('::addOne'),
         '#ajax' => [
             'callback' => '::addmoreCallback',
@@ -60,7 +60,7 @@ function islandora_saml_form()
     if ($acs_urls_field > 1) {
         $form['saml_onelogin']['acs_urls_fieldset']['actions']['remove_url'] = [
             '#type' => 'submit',
-            '#value' => $this->t('Remove'),
+            '#value' => t('Remove'),
             '#submit' => array('::removeCallback'),
             '#ajax' => [
                 'callback' => '::addmoreCallback',
