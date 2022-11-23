@@ -38,6 +38,8 @@ class OneLogin_Saml2_Metadata
 
         $sls = '';
 
+        $multiple_acs_urls = explode("\n", $sp['multipleAssertionConsumerService']);
+
         if (isset($sp['singleLogoutService'])) {
             $slsUrl = htmlspecialchars($sp['singleLogoutService']['url'], ENT_QUOTES);
             $sls = <<<SLS_TEMPLATE
@@ -60,6 +62,7 @@ SLS_TEMPLATE;
         }
 
         $strOrganization = '';
+        $strMultipleAssertionConsumerService ='';
 
         if (!empty($organization)) {
             $organizationInfoNames = array();
@@ -150,6 +153,21 @@ ATTRIBUTEVALUE;
         </md:AttributeConsumingService>
 METADATA_TEMPLATE;
         }
+        if(!empty($multiple_acs_urls)){
+            $acs_count =1;
+            foreach($multiple_acs_urls as $acsUrl){
+
+
+                $acsUrl = htmlspecialchars($acsUrl, ENT_QUOTES);
+                $strMultipleAssertionConsumerService .= <<<METADATA_TEMPLATE
+<md:AssertionConsumerService Binding="{$sp['assertionConsumerService']['binding']}"
+                                     Location="{$acsUrl}"
+                                     index="{$acs_count}" />
+METADATA_TEMPLATE;
+                $acs_count++;
+            }
+        }
+
 
         $spEntityId = htmlspecialchars($sp['entityId'], ENT_QUOTES);
         $acsUrl = htmlspecialchars($sp['assertionConsumerService']['url'], ENT_QUOTES);
@@ -163,7 +181,8 @@ METADATA_TEMPLATE;
 {$sls}        <md:NameIDFormat>{$sp['NameIDFormat']}</md:NameIDFormat>
         <md:AssertionConsumerService Binding="{$sp['assertionConsumerService']['binding']}"
                                      Location="{$acsUrl}"
-                                     index="1" />
+                                     index="0" />
+        {$strMultipleAssertionConsumerService}
         {$strAttributeConsumingService}
     </md:SPSSODescriptor>{$strOrganization}{$strContacts}
 </md:EntityDescriptor>
