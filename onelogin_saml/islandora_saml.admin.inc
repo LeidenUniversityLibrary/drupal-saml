@@ -30,398 +30,341 @@ function islandora_saml_form()
     );
 
 
-    $acs_urls_field = variable_get('saml_options_sp_acs_urls', 1);
-    $form['saml_onelogin']['#tree'] = TRUE;
-    $form['saml_onelogin']['acs_urls_fieldset'] = [
-        '#type' => 'fieldset',
-        '#title' => t('People coming to picnic'),
-        '#prefix' => '<div id="names-fieldset-wrapper">',
-        '#suffix' => '</div>',
-    ];
-
-    for ($i = 0; $i < $acs_urls_field; $i++) {
-        $form['saml_onelogin']['acs_urls_fieldset']['url'][$i] = [
-            '#type' => 'textfield',
-            '#title' => t('Url'),
-        ];
-    }
-    $form['actions'] = [
-        '#type' => 'actions',
-    ];
-    $form['saml_onelogin']['acs_urls_fieldset']['actions']['add_url'] = [
-        '#type' => 'submit',
-        '#value' => t('Add'),
-        '#submit' => array('addOne'),
-        '#ajax' => [
-            'callback' => 'addmoreCallback',
-            'wrapper' => 'acs-urls-fieldset-wrapper',
-        ],
-    ];
-    if ($acs_urls_field > 1) {
-        $form['saml_onelogin']['acs_urls_fieldset']['actions']['remove_url'] = [
-            '#type' => 'submit',
-            '#value' => t('Remove'),
-            '#submit' => array('removeCallback'),
-            '#ajax' => [
-                'callback' => 'addmoreCallback',
-                'wrapper' => 'acs-urls-fieldset-wrapper',
-            ]
-        ];
-    }
+    $form['saml_onelogin']['saml_acs_urls'] = array(
+        '#type' => 'textarea',
+        '#title' => t('Assertion Consumer Service (ACS)'),
+        '#default_value' => variable_get('saml_options_sp_acs_urls', ''),
+        '#description' => t('Add additional ACS URL\'s. Seperate with line beak'),
+        '#required' => TRUE
+    );
 
 
 // IDENTITY PROVIDER SETTINGS
-$form['saml_idp'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('IDENTITY PROVIDER SETTINGS')
-);
+    $form['saml_idp'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('IDENTITY PROVIDER SETTINGS')
+    );
 
-$form['saml_idp']['info'] = array(
-    '#markup' => t('<p>Add information regarding your IdP.</p>')
-);
+    $form['saml_idp']['info'] = array(
+        '#markup' => t('<p>Add information regarding your IdP.</p>')
+    );
 
-$form['saml_idp']['saml_idp_entityid'] = array(
-    '#type' => 'textfield',
-    '#title' => t('IdP Entity Id'),
-    '#default_value' => variable_get('saml_idp_entityid', ''),
-    '#description' => t('Identifier of the IdP entity. ("Issuer URL")'),
-    '#required' => TRUE
-);
+    $form['saml_idp']['saml_idp_entityid'] = array(
+        '#type' => 'textfield',
+        '#title' => t('IdP Entity Id'),
+        '#default_value' => variable_get('saml_idp_entityid', ''),
+        '#description' => t('Identifier of the IdP entity. ("Issuer URL")'),
+        '#required' => TRUE
+    );
 
-$form['saml_idp']['saml_idp_sso'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Single Sign On Service Url'),
-    '#default_value' => variable_get('saml_idp_sso', ''),
-    '#description' => t('URL target of the IdP where the SP will send the Authentication Request. If your IdP has multiple URL targets, the one that uses the HTTP Redirect Binding should be used here. ("SAML 2.0 Endpoint (HTTP)")'),
-    '#required' => TRUE
-);
+    $form['saml_idp']['saml_idp_sso'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Single Sign On Service Url'),
+        '#default_value' => variable_get('saml_idp_sso', ''),
+        '#description' => t('URL target of the IdP where the SP will send the Authentication Request. If your IdP has multiple URL targets, the one that uses the HTTP Redirect Binding should be used here. ("SAML 2.0 Endpoint (HTTP)")'),
+        '#required' => TRUE
+    );
 
-$form['saml_idp']['saml_options_slo'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('<strong>Single Log Out</strong>'),
-    '#default_value' => variable_get('saml_options_slo', FALSE),
-    '#description' => t('Enable SAML Single Log Out. SLO is complex functionality. The most common SLO implementation is based on front-channel (redirections). Sometimes if the SLO workflow fails, a user can be blocked in an unhandled view. Unless you have a strong grasp of SLO it is recommended that you leave it disabled. If enabled, enter the IdP\'s SLO target URL below.'),
-    '#required' => FALSE
-);
+    $form['saml_idp']['saml_options_slo'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('<strong>Single Log Out</strong>'),
+        '#default_value' => variable_get('saml_options_slo', FALSE),
+        '#description' => t('Enable SAML Single Log Out. SLO is complex functionality. The most common SLO implementation is based on front-channel (redirections). Sometimes if the SLO workflow fails, a user can be blocked in an unhandled view. Unless you have a strong grasp of SLO it is recommended that you leave it disabled. If enabled, enter the IdP\'s SLO target URL below.'),
+        '#required' => FALSE
+    );
 
-$form['saml_idp']['saml_idp_slo'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Single Log Out Service Url'),
-    '#default_value' => variable_get('saml_idp_slo', ''),
-    '#description' => t('URL target for the IdP where the SP will send the SLO Request. ("SLO Endpoint (HTTP)")'),
-    '#required' => FALSE
-);
+    $form['saml_idp']['saml_idp_slo'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Single Log Out Service Url'),
+        '#default_value' => variable_get('saml_idp_slo', ''),
+        '#description' => t('URL target for the IdP where the SP will send the SLO Request. ("SLO Endpoint (HTTP)")'),
+        '#required' => FALSE
+    );
 
-$form['saml_idp']['saml_logout_link'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Logout Redirect'),
-    '#default_value' => variable_get('saml_logout_link', ''),
-    '#description' => t('If Single Log Out is not used, you can choose to redirect a SAML user after they are logged out of Drupal. Some use this to redirect to an IdP logout page, a Central Authentication Service (CAS) logout page, or a custom page warning the user to close their browser to end their SSO session. This only affects users who have logged in via SAML.'),
-    '#required' => FALSE
-);
+    $form['saml_idp']['saml_logout_link'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Logout Redirect'),
+        '#default_value' => variable_get('saml_logout_link', ''),
+        '#description' => t('If Single Log Out is not used, you can choose to redirect a SAML user after they are logged out of Drupal. Some use this to redirect to an IdP logout page, a Central Authentication Service (CAS) logout page, or a custom page warning the user to close their browser to end their SSO session. This only affects users who have logged in via SAML.'),
+        '#required' => FALSE
+    );
 
-$form['saml_idp']['saml_idp_x509cert'] = array(
-    '#type' => 'textarea',
-    '#title' => t('X.509 Certificate'),
-    '#default_value' => variable_get('saml_idp_x509cert', ''),
-    '#description' => t('Public x509 certificate of the IdP. The full certificate (including -----BEGIN CERTIFICATE----- and -----END CERTIFICATE-----) is required. ("X.509 certificate")'),
-    '#required' => TRUE
-);
+    $form['saml_idp']['saml_idp_x509cert'] = array(
+        '#type' => 'textarea',
+        '#title' => t('X.509 Certificate'),
+        '#default_value' => variable_get('saml_idp_x509cert', ''),
+        '#description' => t('Public x509 certificate of the IdP. The full certificate (including -----BEGIN CERTIFICATE----- and -----END CERTIFICATE-----) is required. ("X.509 certificate")'),
+        '#required' => TRUE
+    );
 
 // OPTIONS
-$form['saml_options'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('OPTIONS')
-);
+    $form['saml_options'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('OPTIONS')
+    );
 
-$form['saml_options']['info'] = array(
-    '#markup' => t('<p>In this section the behavior of the plugin is set.</p>')
-);
+    $form['saml_options']['info'] = array(
+        '#markup' => t('<p>In this section the behavior of the plugin is set.</p>')
+    );
 
-$form['saml_options']['saml_options_autocreate'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('<strong>Create user if not exists</strong>'),
-    '#default_value' => variable_get('saml_options_autocreate', FALSE),
-    '#description' => t('<p>Auto-provisioning. If user not exists, Drupal will create a new user with the data provided by the IdP.</p><p>Review the Mapping section.</p>'),
-    '#required' => FALSE
-);
+    $form['saml_options']['saml_options_autocreate'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('<strong>Create user if not exists</strong>'),
+        '#default_value' => variable_get('saml_options_autocreate', FALSE),
+        '#description' => t('<p>Auto-provisioning. If user not exists, Drupal will create a new user with the data provided by the IdP.</p><p>Review the Mapping section.</p>'),
+        '#required' => FALSE
+    );
 
-$form['saml_options']['saml_options_username_from_email'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('<strong>Get username from email address</strong>'),
-    '#default_value' => variable_get('saml_options_username_from_email', FALSE),
-    '#description' => t('<p>Use everything in front of the @ in the email address as the username. This may be useful if you are only sending an email address in your SAML response, but you want to auto-provision accounts which requires a username and email address.</p>'),
-    '#required' => FALSE
-);
+    $form['saml_options']['saml_options_username_from_email'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('<strong>Get username from email address</strong>'),
+        '#default_value' => variable_get('saml_options_username_from_email', FALSE),
+        '#description' => t('<p>Use everything in front of the @ in the email address as the username. This may be useful if you are only sending an email address in your SAML response, but you want to auto-provision accounts which requires a username and email address.</p>'),
+        '#required' => FALSE
+    );
 
-$form['saml_options']['saml_options_syncroles'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('<strong>Sync roles</strong>'),
-    '#default_value' => variable_get('saml_options_syncroles', FALSE),
-    '#description' => t('<p>Auto-sync. The role of the Drupal user account will be synchronized with the data provided by the IdP.</p><p>Review the Mapping section.</p>'),
-    '#required' => FALSE
-);
+    $form['saml_options']['saml_options_syncroles'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('<strong>Sync roles</strong>'),
+        '#default_value' => variable_get('saml_options_syncroles', FALSE),
+        '#description' => t('<p>Auto-sync. The role of the Drupal user account will be synchronized with the data provided by the IdP.</p><p>Review the Mapping section.</p>'),
+        '#required' => FALSE
+    );
 
-$form['saml_options']['saml_options_saml_link'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('<strong>SAML link</strong>'),
-    '#default_value' => variable_get('saml_options_saml_link', FALSE),
-    '#description' => t('<p>Show or not a SAML link to execute a SP-initiated SSO in the login page</p>'),
-    '#required' => FALSE
-);
+    $form['saml_options']['saml_options_saml_link'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('<strong>SAML link</strong>'),
+        '#default_value' => variable_get('saml_options_saml_link', FALSE),
+        '#description' => t('<p>Show or not a SAML link to execute a SP-initiated SSO in the login page</p>'),
+        '#required' => FALSE
+    );
 
 # the values for the dropdown box
-$form['saml_options']['saml_options_account_matcher_options'] = array(
-    '#type' => 'value',
-    '#value' => array('username' => t('username'), 'email' => t('email'))
-);
+    $form['saml_options']['saml_options_account_matcher_options'] = array(
+        '#type' => 'value',
+        '#value' => array('username' => t('username'), 'email' => t('email'))
+    );
 
-$form['saml_options']['saml_options_account_matcher'] = array(
-    '#type' => 'select',
-    '#title' => t('Match Drupal account by'),
-    '#default_value' => variable_get('saml_options_account_matcher', 'username'),
-    '#options' => $form['saml_options']['saml_options_account_matcher_options']['#value'],
-    '#description' => t('Select what field will be used in order to find the user account. If you select the \'email\' field name remember to prevent that the user is able to change his mail in his profile.')
-);
+    $form['saml_options']['saml_options_account_matcher'] = array(
+        '#type' => 'select',
+        '#title' => t('Match Drupal account by'),
+        '#default_value' => variable_get('saml_options_account_matcher', 'username'),
+        '#options' => $form['saml_options']['saml_options_account_matcher_options']['#value'],
+        '#description' => t('Select what field will be used in order to find the user account. If you select the \'email\' field name remember to prevent that the user is able to change his mail in his profile.')
+    );
 
 // ATTRIBUTE MAPPING
-$form['saml_attr_mapping'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('ATTRIBUTE MAPPING')
-);
+    $form['saml_attr_mapping'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('ATTRIBUTE MAPPING')
+    );
 
-$form['saml_attr_mapping']['info'] = array(
-    '#markup' => t('<p>Sometimes the names of the attributes sent by the IdP not match the names used by Drupal for the user accounts. In this section we can set the mapping between IdP fields and Drupal fields.</p>')
-);
+    $form['saml_attr_mapping']['info'] = array(
+        '#markup' => t('<p>Sometimes the names of the attributes sent by the IdP not match the names used by Drupal for the user accounts. In this section we can set the mapping between IdP fields and Drupal fields.</p>')
+    );
 
-$form['saml_attr_mapping']['saml_attr_mapping_username'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Username'),
-    '#default_value' => variable_get('saml_attr_mapping_username', ''),
-    '#required' => TRUE,
-    '#description' => t("Be sure that usernames at the IdP don't contain punctuation (periods, hyphens, apostrophes, and underscores are allowed)")
-);
+    $form['saml_attr_mapping']['saml_attr_mapping_username'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Username'),
+        '#default_value' => variable_get('saml_attr_mapping_username', ''),
+        '#required' => TRUE,
+        '#description' => t("Be sure that usernames at the IdP don't contain punctuation (periods, hyphens, apostrophes, and underscores are allowed)")
+    );
 
-$form['saml_attr_mapping']['saml_attr_mapping_email'] = array(
-    '#type' => 'textfield',
-    '#title' => t('E-mail'),
-    '#default_value' => variable_get('saml_attr_mapping_email', ''),
-    '#required' => TRUE
-);
+    $form['saml_attr_mapping']['saml_attr_mapping_email'] = array(
+        '#type' => 'textfield',
+        '#title' => t('E-mail'),
+        '#default_value' => variable_get('saml_attr_mapping_email', ''),
+        '#required' => TRUE
+    );
 
-$form['saml_attr_mapping']['saml_attr_mapping_role'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Role'),
-    '#default_value' => variable_get('saml_attr_mapping_role', ''),
-    '#required' => FALSE
-);
+    $form['saml_attr_mapping']['saml_attr_mapping_role'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Role'),
+        '#default_value' => variable_get('saml_attr_mapping_role', ''),
+        '#required' => FALSE
+    );
 
 // ROLE MAPPING
-$form['saml_role_mapping'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('ROLE MAPPING')
-);
+    $form['saml_role_mapping'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('ROLE MAPPING')
+    );
 
-$form['saml_role_mapping']['info'] = array(
-    '#markup' => t('<p>The IdP can use it\'s own roles. Set in this section the mapping between IdP and Drupal roles. Accepts multiple valued comma separated. Example: admin,owner,superuser.</p>')
-);
+    $form['saml_role_mapping']['info'] = array(
+        '#markup' => t('<p>The IdP can use it\'s own roles. Set in this section the mapping between IdP and Drupal roles. Accepts multiple valued comma separated. Example: admin,owner,superuser.</p>')
+    );
 
-$form['saml_role_mapping']['saml_role_mapping_administrator'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Administrator'),
-    '#default_value' => variable_get('saml_role_mapping_administrator', ''),
-    '#required' => FALSE
-);
+    $form['saml_role_mapping']['saml_role_mapping_administrator'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Administrator'),
+        '#default_value' => variable_get('saml_role_mapping_administrator', ''),
+        '#required' => FALSE
+    );
 
 // USER EXPERIENCE
-$form['saml_user_experience'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('USER EXPERIENCE')
-);
+    $form['saml_user_experience'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('USER EXPERIENCE')
+    );
 
-$form['saml_user_experience']['info'] = array(
-    '#markup' => t('<p>When implementing SSO, our users may become confused with menus and links that allow them to manage a local Drupal password or request a new account. These options allow you to customize the experience for SAML users with the hopes of avoiding some of the confusion.</p>')
-);
+    $form['saml_user_experience']['info'] = array(
+        '#markup' => t('<p>When implementing SSO, our users may become confused with menus and links that allow them to manage a local Drupal password or request a new account. These options allow you to customize the experience for SAML users with the hopes of avoiding some of the confusion.</p>')
+    );
 
-$form['saml_user_experience']['saml_options_current_pass_disabled'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('<strong>Disable current password field on user profile page.</strong>'),
-    '#default_value' => variable_get('saml_options_current_pass_disabled', FALSE),
-    '#description' => t('<p>You may wish to limit a user from creating and managing a Drupal password. The user profile form includes a current password field that is required as validation in order to update certain user profile fields (such as email address). If the user does not have a Drupal password, this will get in the way. This option disables the field for users who have logged in via SAML. Users with the Administrator role are exempt.</p>'),
-    '#required' => FALSE
-);
+    $form['saml_user_experience']['saml_options_current_pass_disabled'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('<strong>Disable current password field on user profile page.</strong>'),
+        '#default_value' => variable_get('saml_options_current_pass_disabled', FALSE),
+        '#description' => t('<p>You may wish to limit a user from creating and managing a Drupal password. The user profile form includes a current password field that is required as validation in order to update certain user profile fields (such as email address). If the user does not have a Drupal password, this will get in the way. This option disables the field for users who have logged in via SAML. Users with the Administrator role are exempt.</p>'),
+        '#required' => FALSE
+    );
 
-$form['saml_user_experience']['saml_options_password_tab_disabled'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('<strong>Disable user password tab and related page.</strong>'),
-    '#default_value' => variable_get('saml_options_password_tab_disabled', FALSE),
-    '#description' => t('<p>You may wish to limit a user from creating and managing a Drupal password. This option disables the menu tabs associated with the user password page. This option disables the password page for users who have logged in via SAML. Users with the Administrator role are exempt.</p>'),
-    '#required' => FALSE
-);
+    $form['saml_user_experience']['saml_options_password_tab_disabled'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('<strong>Disable user password tab and related page.</strong>'),
+        '#default_value' => variable_get('saml_options_password_tab_disabled', FALSE),
+        '#description' => t('<p>You may wish to limit a user from creating and managing a Drupal password. This option disables the menu tabs associated with the user password page. This option disables the password page for users who have logged in via SAML. Users with the Administrator role are exempt.</p>'),
+        '#required' => FALSE
+    );
 
-$form['saml_user_experience']['saml_create_new_account'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Customize the Create new account link.'),
-    '#default_value' => variable_get('saml_create_new_account', ''),
-    '#description' => t('Depending on your Drupal implementation, you may allow requests for new accounts from the Drupal login page. Rather than using Drupal\'s request form, you can direct users to your company\'s account request form.'),
-    '#required' => FALSE
-);
+    $form['saml_user_experience']['saml_create_new_account'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Customize the Create new account link.'),
+        '#default_value' => variable_get('saml_create_new_account', ''),
+        '#description' => t('Depending on your Drupal implementation, you may allow requests for new accounts from the Drupal login page. Rather than using Drupal\'s request form, you can direct users to your company\'s account request form.'),
+        '#required' => FALSE
+    );
 
-$form['saml_user_experience']['saml_request_new_password'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Customize the Request new password link.'),
-    '#default_value' => variable_get('saml_request_new_password', ''),
-    '#description' => t('If you have enabled the Request new password link in Drupal, a SSO user could click the link and go through the process believing that their SSO account password is being changed. In reality this would only change their local Drupal password. To avoid this confusion you can direct users to your company\'s password management system.'),
-    '#required' => FALSE
-);
+    $form['saml_user_experience']['saml_request_new_password'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Customize the Request new password link.'),
+        '#default_value' => variable_get('saml_request_new_password', ''),
+        '#description' => t('If you have enabled the Request new password link in Drupal, a SSO user could click the link and go through the process believing that their SSO account password is being changed. In reality this would only change their local Drupal password. To avoid this confusion you can direct users to your company\'s password management system.'),
+        '#required' => FALSE
+    );
 
 // ADVANCED SETTINGS
-$form['saml_advanced_settings'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('ADVANCED SETTINGS')
-);
+    $form['saml_advanced_settings'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('ADVANCED SETTINGS')
+    );
 
-$form['saml_advanced_settings']['saml_advanced_settings_debug'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('<strong>Debug Mode</strong>'),
-    '#default_value' => variable_get('saml_advanced_settings_debug', FALSE),
-    '#description' => t('Enable it when you are debugging the SAML workflow. Errors and Warnings will be showed.'),
-    '#required' => FALSE
-);
+    $form['saml_advanced_settings']['saml_advanced_settings_debug'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('<strong>Debug Mode</strong>'),
+        '#default_value' => variable_get('saml_advanced_settings_debug', FALSE),
+        '#description' => t('Enable it when you are debugging the SAML workflow. Errors and Warnings will be showed.'),
+        '#required' => FALSE
+    );
 
-$form['saml_advanced_settings']['saml_advanced_settings_strict_mode'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('<strong>Strict Mode</strong>'),
-    '#default_value' => variable_get('saml_advanced_settings_strict_mode', FALSE),
-    '#description' => t('If Strict mode is Enabled, then Drupal will reject unsigned or unencrypted messages if it expects them signed or encrypted. Also it will reject the messages if they do not strictly follow the SAML standard: Destination, NameId, Conditions ... are validated too.'),
-    '#required' => FALSE
-);
+    $form['saml_advanced_settings']['saml_advanced_settings_strict_mode'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('<strong>Strict Mode</strong>'),
+        '#default_value' => variable_get('saml_advanced_settings_strict_mode', FALSE),
+        '#description' => t('If Strict mode is Enabled, then Drupal will reject unsigned or unencrypted messages if it expects them signed or encrypted. Also it will reject the messages if they do not strictly follow the SAML standard: Destination, NameId, Conditions ... are validated too.'),
+        '#required' => FALSE
+    );
 
-$form['saml_advanced_settings']['saml_advanced_settings_sp_entity_id'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Service Provider Entity Id'),
-    '#default_value' => variable_get('saml_advanced_settings_sp_entity_id', 'php-saml'),
-    '#description' => t('Set the Entity ID for the Service Provider. If not provided, \'php-saml\' will be used.'),
-    '#required' => FALSE
-);
+    $form['saml_advanced_settings']['saml_advanced_settings_sp_entity_id'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Service Provider Entity Id'),
+        '#default_value' => variable_get('saml_advanced_settings_sp_entity_id', 'php-saml'),
+        '#description' => t('Set the Entity ID for the Service Provider. If not provided, \'php-saml\' will be used.'),
+        '#required' => FALSE
+    );
 
-$form['saml_advanced_settings']['saml_advanced_settings_nameid_format'] = array(
-    '#type' => 'textfield',
-    '#title' => t('NameId Format'),
-    '#default_value' => variable_get('saml_advanced_settings_nameid_format', 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress'),
-    '#description' => t('Set the NameId format that the Service Provider and Identity Provider will use. If not provided, \'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress\' will be used.'),
-    '#required' => FALSE
-);
+    $form['saml_advanced_settings']['saml_advanced_settings_nameid_format'] = array(
+        '#type' => 'textfield',
+        '#title' => t('NameId Format'),
+        '#default_value' => variable_get('saml_advanced_settings_nameid_format', 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress'),
+        '#description' => t('Set the NameId format that the Service Provider and Identity Provider will use. If not provided, \'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress\' will be used.'),
+        '#required' => FALSE
+    );
 
 // SIGNING/ENCRYPTION SETTINGS
-$form['saml_signing_encryption_settings'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('SIGNING/ENCRYPTION SETTINGS')
-);
+    $form['saml_signing_encryption_settings'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('SIGNING/ENCRYPTION SETTINGS')
+    );
 
-$form['saml_signing_encryption_settings']['info'] = array(
-    '#markup' => t('<p>If signing/encryption is enabled, then a x509 cert and private key for the SP must be provided. There are two ways to supply the certificate and key:</p><p>1. Store them as files named sp.key and sp.crt in the \'certs\' folder of this Drupal module (be sure that the folder is protected and not exposed to the Internet).<br>2. Paste the certificate and key text in the corresponding textareas (review any database security issues as to limit the exposure of the key).</p><p><strong>Please be aware: if you encrypt the entire SAML Assertion, this module will not be able to decrypt attributes. Much of the functionality of this module depends on attributes (auto-provisioning, role sync, etc.). If you can live without encrypting the entire SAML Assertion, your attributes will work and additional security can be implemented by encrypting the NameId and enforcing signed requests/responses.</strong></p>')
-);
+    $form['saml_signing_encryption_settings']['info'] = array(
+        '#markup' => t('<p>If signing/encryption is enabled, then a x509 cert and private key for the SP must be provided. There are two ways to supply the certificate and key:</p><p>1. Store them as files named sp.key and sp.crt in the \'certs\' folder of this Drupal module (be sure that the folder is protected and not exposed to the Internet).<br>2. Paste the certificate and key text in the corresponding textareas (review any database security issues as to limit the exposure of the key).</p><p><strong>Please be aware: if you encrypt the entire SAML Assertion, this module will not be able to decrypt attributes. Much of the functionality of this module depends on attributes (auto-provisioning, role sync, etc.). If you can live without encrypting the entire SAML Assertion, your attributes will work and additional security can be implemented by encrypting the NameId and enforcing signed requests/responses.</strong></p>')
+    );
 
-$form['saml_signing_encryption_settings']['saml_advanced_settings_nameid_encrypted'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('<strong>Encrypt nameID</strong>'),
-    '#default_value' => variable_get('saml_advanced_settings_nameid_encrypted', FALSE),
-    '#description' => t('The nameID sent by this SP will be encrypted.'),
-    '#required' => FALSE
-);
+    $form['saml_signing_encryption_settings']['saml_advanced_settings_nameid_encrypted'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('<strong>Encrypt nameID</strong>'),
+        '#default_value' => variable_get('saml_advanced_settings_nameid_encrypted', FALSE),
+        '#description' => t('The nameID sent by this SP will be encrypted.'),
+        '#required' => FALSE
+    );
 
-$form['saml_signing_encryption_settings']['saml_advanced_settings_authn_request_signed'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('<strong>Sign AuthnRequest</strong>'),
-    '#default_value' => variable_get('saml_advanced_settings_authn_request_signed', FALSE),
-    '#description' => t('The samlp:AuthnRequest messages sent by this SP will be signed.'),
-    '#required' => FALSE
-);
+    $form['saml_signing_encryption_settings']['saml_advanced_settings_authn_request_signed'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('<strong>Sign AuthnRequest</strong>'),
+        '#default_value' => variable_get('saml_advanced_settings_authn_request_signed', FALSE),
+        '#description' => t('The samlp:AuthnRequest messages sent by this SP will be signed.'),
+        '#required' => FALSE
+    );
 
-$form['saml_signing_encryption_settings']['saml_advanced_settings_logout_request_signed'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('<strong>Sign LogoutRequest</strong>'),
-    '#default_value' => variable_get('saml_advanced_settings_logout_request_signed', FALSE),
-    '#description' => t('The samlp:logoutRequest messages sent by this SP will be signed.'),
-    '#required' => FALSE
-);
+    $form['saml_signing_encryption_settings']['saml_advanced_settings_logout_request_signed'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('<strong>Sign LogoutRequest</strong>'),
+        '#default_value' => variable_get('saml_advanced_settings_logout_request_signed', FALSE),
+        '#description' => t('The samlp:logoutRequest messages sent by this SP will be signed.'),
+        '#required' => FALSE
+    );
 
-$form['saml_signing_encryption_settings']['saml_advanced_settings_logout_response_signed'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('<strong>Sign LogoutResponse</strong>'),
-    '#default_value' => variable_get('saml_advanced_settings_logout_response_signed', FALSE),
-    '#description' => t('The samlp:logoutResponse messages sent by this SP will be signed.'),
-    '#required' => FALSE
-);
+    $form['saml_signing_encryption_settings']['saml_advanced_settings_logout_response_signed'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('<strong>Sign LogoutResponse</strong>'),
+        '#default_value' => variable_get('saml_advanced_settings_logout_response_signed', FALSE),
+        '#description' => t('The samlp:logoutResponse messages sent by this SP will be signed.'),
+        '#required' => FALSE
+    );
 
-$form['saml_signing_encryption_settings']['advanced_settings_want_message_signed'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('<strong>Reject Unsigned Messages</strong>'),
-    '#default_value' => variable_get('advanced_settings_want_message_signed', FALSE),
-    '#description' => t('Reject unsigned samlp:Response, samlp:LogoutRequest and samlp:LogoutResponse received'),
-    '#required' => FALSE
-);
+    $form['saml_signing_encryption_settings']['advanced_settings_want_message_signed'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('<strong>Reject Unsigned Messages</strong>'),
+        '#default_value' => variable_get('advanced_settings_want_message_signed', FALSE),
+        '#description' => t('Reject unsigned samlp:Response, samlp:LogoutRequest and samlp:LogoutResponse received'),
+        '#required' => FALSE
+    );
 
-$form['saml_signing_encryption_settings']['saml_advanced_settings_want_assertion_signed'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('<strong>Reject unsigned saml:Assertion received</strong>'),
-    '#default_value' => variable_get('saml_advanced_settings_want_assertion_signed', FALSE),
-    '#description' => t('Reject Unsigned Assertions'),
-    '#required' => FALSE
-);
+    $form['saml_signing_encryption_settings']['saml_advanced_settings_want_assertion_signed'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('<strong>Reject unsigned saml:Assertion received</strong>'),
+        '#default_value' => variable_get('saml_advanced_settings_want_assertion_signed', FALSE),
+        '#description' => t('Reject Unsigned Assertions'),
+        '#required' => FALSE
+    );
 
-$form['saml_signing_encryption_settings']['saml_advanced_settings_want_assertion_encrypted'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('<strong>Reject Unencrypted Assertions</strong>'),
-    '#default_value' => variable_get('saml_advanced_settings_want_assertion_encrypted', FALSE),
-    '#description' => t('Reject unencrypted saml:Assertion received.'),
-    '#required' => FALSE
-);
+    $form['saml_signing_encryption_settings']['saml_advanced_settings_want_assertion_encrypted'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('<strong>Reject Unencrypted Assertions</strong>'),
+        '#default_value' => variable_get('saml_advanced_settings_want_assertion_encrypted', FALSE),
+        '#description' => t('Reject unencrypted saml:Assertion received.'),
+        '#required' => FALSE
+    );
 
-$form['saml_signing_encryption_settings']['saml_advanced_settings_sp_x509cert'] = array(
-    '#type' => 'textarea',
-    '#title' => t('Service Provider X.509 Certificate'),
-    '#default_value' => variable_get('saml_advanced_settings_sp_x509cert', ''),
-    '#description' => t('Public x509 certificate of the SP. The full certificate (including -----BEGIN CERTIFICATE----- and -----END CERTIFICATE-----) is required. Leave this field empty if you have added sp.crt to the certs folder of this module.'),
-    '#required' => FALSE
-);
+    $form['saml_signing_encryption_settings']['saml_advanced_settings_sp_x509cert'] = array(
+        '#type' => 'textarea',
+        '#title' => t('Service Provider X.509 Certificate'),
+        '#default_value' => variable_get('saml_advanced_settings_sp_x509cert', ''),
+        '#description' => t('Public x509 certificate of the SP. The full certificate (including -----BEGIN CERTIFICATE----- and -----END CERTIFICATE-----) is required. Leave this field empty if you have added sp.crt to the certs folder of this module.'),
+        '#required' => FALSE
+    );
 
-$form['saml_signing_encryption_settings']['saml_advanced_settings_sp_privatekey'] = array(
-    '#type' => 'textarea',
-    '#title' => t('Service Provider Private Key'),
-    '#default_value' => variable_get('saml_advanced_settings_sp_privatekey', ''),
-    '#description' => t('Private Key of the SP. The full certificate (including -----BEGIN CERTIFICATE----- and -----END CERTIFICATE-----) is required. Leave this field empty if have added sp.key to the certs folder of this module.'),
-    '#required' => FALSE
-);
+    $form['saml_signing_encryption_settings']['saml_advanced_settings_sp_privatekey'] = array(
+        '#type' => 'textarea',
+        '#title' => t('Service Provider Private Key'),
+        '#default_value' => variable_get('saml_advanced_settings_sp_privatekey', ''),
+        '#description' => t('Private Key of the SP. The full certificate (including -----BEGIN CERTIFICATE----- and -----END CERTIFICATE-----) is required. Leave this field empty if have added sp.key to the certs folder of this module.'),
+        '#required' => FALSE
+    );
 
-return system_settings_form($form);
-}
-
-function addOne(array &$form, $form_state)
-{
-    $name_field = variable_get('saml_options_sp_acs_urls');
-    $add_button = $name_field + 1;
-    variable_set('saml_options_sp_acs_urls',$add_button);
-    $form_state['rebuild'] = TRUE;
-}
-
-
-function addmoreCallback(array &$form,  $form_state)
-{
-    $name_field = $form_state->get('saml_options_sp_acs_urls');
-    return $form['saml_onelogin']['acs_urls_fieldset'];
-}
-
-
-function removeCallback(array &$form, $form_state)
-{
-    $name_field = variable_get('saml_options_sp_acs_urls');
-    if ($name_field > 1) {
-        $remove_button = $name_field - 1;
-        variable_set('saml_options_sp_acs_urls',$remove_button);
-    }
-    $form_state['rebuild'] = TRUE;
+    return system_settings_form($form);
 }
 
 function search_admin_settings($form)
@@ -522,5 +465,15 @@ function islandora_saml_form_validate($form, &$form_state)
 {
     if (empty($form_state['values']['saml_advanced_settings_sp_entity_id'])) {
         $form_state['values']['saml_advanced_settings_sp_entity_id'] = 'php-saml';
+    }
+
+    if (!empty($form_state['values']['saml_acs_urls'])) {
+        $acs_urls = $form_state['values']['saml_acs_urls'];
+        $acs_urls_explode = explode("\n", $acs_urls);
+        foreach ($acs_urls_explode as $acs_url) {
+            if (valid_url($acs_urls, TRUE)) {
+                form_set_error('name', t('An Instant Importer with this name already exists.'));
+            }
+        }
     }
 }
