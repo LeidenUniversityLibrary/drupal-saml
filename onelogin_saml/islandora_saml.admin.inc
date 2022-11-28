@@ -15,7 +15,7 @@
 /**
  * Configuration menu of OneLogin SAML
  */
-function islandora_saml_form()
+function islandora_saml_form($form, &$form_state)
 {
 
     $form = array();
@@ -30,7 +30,7 @@ function islandora_saml_form()
     );
 
 
-    $acs_urls_field = variable_get('saml_options_sp_acs_urls', 1);
+    $acs_urls_field =  variable_get('saml_options_sp_acs_urls',1);
     $form['saml_onelogin']['#tree'] = TRUE;
     $form['saml_onelogin']['acs_urls_fieldset'] = [
         '#type' => 'fieldset',
@@ -400,8 +400,9 @@ return system_settings_form($form);
 
 function addOne(array &$form,  $form_state)
 {
-    $name_field = variable_get('saml_options_sp_acs_urls');
+    $name_field = $form_state['values']['saml_options_sp_acs_urls'];
     $add_button = $name_field + 1;
+    $form_state['values']['saml_options_sp_acs_urls'] = $add_button;
     variable_set('saml_options_sp_acs_urls',$add_button);
     $form_state['rebuild'] = TRUE;
 }
@@ -409,16 +410,17 @@ function addOne(array &$form,  $form_state)
 
 function addmoreCallback(array &$form,  $form_state)
 {
-    $name_field = $form_state->get('saml_options_sp_acs_urls');
+    $name_field = $form_state['values']['saml_options_sp_acs_urls'];
     return $form['saml_onelogin']['acs_urls_fieldset'];
 }
 
 
 function removeCallback(array &$form, $form_state)
 {
-    $name_field = variable_get('saml_options_sp_acs_urls');
+    $name_field = $form_state['values']['saml_options_sp_acs_urls'];
     if ($name_field > 1) {
         $remove_button = $name_field - 1;
+        $form_state['values']['saml_options_sp_acs_urls'] = $remove_button;
         variable_set('saml_options_sp_acs_urls',$remove_button);
     }
     $form_state['rebuild'] = TRUE;
