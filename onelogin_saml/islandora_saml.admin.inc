@@ -51,9 +51,9 @@ function islandora_saml_form()
     $form['saml_onelogin']['acs_urls_fieldset']['actions']['add_url'] = [
         '#type' => 'submit',
         '#value' => t('Add'),
-        '#submit' => array('::addOne'),
+        '#submit' => array('addOne'),
         '#ajax' => [
-            'callback' => '::addmoreCallback',
+            'callback' => 'addmoreCallback',
             'wrapper' => 'acs-urls-fieldset-wrapper',
         ],
     ];
@@ -61,9 +61,9 @@ function islandora_saml_form()
         $form['saml_onelogin']['acs_urls_fieldset']['actions']['remove_url'] = [
             '#type' => 'submit',
             '#value' => t('Remove'),
-            '#submit' => array('::removeCallback'),
+            '#submit' => array('removeCallback'),
             '#ajax' => [
-                'callback' => '::addmoreCallback',
+                'callback' => 'addmoreCallback',
                 'wrapper' => 'acs-urls-fieldset-wrapper',
             ]
         ];
@@ -400,10 +400,10 @@ return system_settings_form($form);
 
 function addOne(array &$form, FormStateInterface $form_state)
 {
-    $name_field = $form_state->get('saml_options_sp_acs_urls');
+    $name_field = variable_get('saml_options_sp_acs_urls');
     $add_button = $name_field + 1;
-    $form_state->set('saml_options_sp_acs_urls', $add_button);
-    $form_state->setRebuild();
+    variable_set('saml_options_sp_acs_urls',$add_button);
+    $form_state['rebuild'] = TRUE;
 }
 
 
@@ -416,12 +416,12 @@ function addmoreCallback(array &$form, FormStateInterface $form_state)
 
 function removeCallback(array &$form, FormStateInterface $form_state)
 {
-    $name_field = $form_state->get('saml_options_sp_acs_urls');
+    $name_field = variable_get('saml_options_sp_acs_urls');
     if ($name_field > 1) {
         $remove_button = $name_field - 1;
-        $form_state->set('saml_options_sp_acs_urls', $remove_button);
+        variable_set('saml_options_sp_acs_urls',$remove_button);
     }
-    $form_state->setRebuild();
+    $form_state['rebuild'] = TRUE;
 }
 
 function search_admin_settings($form)
