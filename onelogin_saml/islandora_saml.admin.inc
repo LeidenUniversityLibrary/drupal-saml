@@ -478,7 +478,16 @@ function islandora_saml_form_validate($form, &$form_state)
                 $acs_valid_urls[] = $acs_url;
             }
         }
+        $acs_urls ="";
+        if(!empty($acs_valid_urls)){
+            foreach ($acs_valid_urls as $acs_url) {
+                $acs_urls .= $acs_url."\n";
+
+            }
+        }
         $form_state['values']['saml_acs_urls'] = $acs_valid_urls;
+        variable_set('saml_options_sp_acs_urls', $acs_urls);
 
     }
 }
+
