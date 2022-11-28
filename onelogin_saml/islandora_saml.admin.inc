@@ -398,7 +398,7 @@ $form['saml_signing_encryption_settings']['saml_advanced_settings_sp_privatekey'
 return system_settings_form($form);
 }
 
-function addOne(array &$form, FormStateInterface $form_state)
+function addOne(array &$form,  $form_state)
 {
     $name_field = variable_get('saml_options_sp_acs_urls');
     $add_button = $name_field + 1;
@@ -407,14 +407,14 @@ function addOne(array &$form, FormStateInterface $form_state)
 }
 
 
-function addmoreCallback(array &$form, FormStateInterface $form_state)
+function addmoreCallback(array &$form,  $form_state)
 {
     $name_field = $form_state->get('saml_options_sp_acs_urls');
     return $form['saml_onelogin']['acs_urls_fieldset'];
 }
 
 
-function removeCallback(array &$form, FormStateInterface $form_state)
+function removeCallback(array &$form, $form_state)
 {
     $name_field = variable_get('saml_options_sp_acs_urls');
     if ($name_field > 1) {
