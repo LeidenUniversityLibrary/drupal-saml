@@ -472,7 +472,7 @@ function islandora_saml_form_validate($form, &$form_state)
         $acs_urls_explode = explode("\n", $acs_urls);
         $acs_valid_urls =[];
         foreach ($acs_urls_explode as $acs_url) {
-            if (valid_url($acs_urls, TRUE)) {
+            if (valid_url($acs_url, TRUE)) {
                 form_set_error('name', t('Invalid url $acs_url'));
             }else{
                 $acs_valid_urls[] = $acs_url;
