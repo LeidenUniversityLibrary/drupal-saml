@@ -470,10 +470,15 @@ function islandora_saml_form_validate($form, &$form_state)
     if (!empty($form_state['values']['saml_acs_urls'])) {
         $acs_urls = $form_state['values']['saml_acs_urls'];
         $acs_urls_explode = explode("\n", $acs_urls);
+        $acs_valid_urls =[];
         foreach ($acs_urls_explode as $acs_url) {
             if (valid_url($acs_urls, TRUE)) {
-                form_set_error('name', t('An Instant Importer with this name already exists.'));
+                form_set_error('name', t('Invalid url $acs_url'));
+            }else{
+                $acs_valid_urls[] = $acs_url;
             }
         }
+        $form_state['values']['saml_acs_urls'] = $acs_valid_urls;
+
     }
 }
