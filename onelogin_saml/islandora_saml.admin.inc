@@ -477,7 +477,7 @@ function islandora_saml_form_validate($form, &$form_state)
             // Remove all illegal characters from a url
             $url = filter_var($acs_url, FILTER_SANITIZE_URL);
             if (validate_url($url)) {
-                $acs_valid_urls[] = str_replace(' ', PHP_EOL, $url);
+                $acs_valid_urls[] = rtrim(str_replace(' ', PHP_EOL, $url),"/");
             } else {
                 form_set_error('name', t('Invalid url ' . $acs_url));
             }
