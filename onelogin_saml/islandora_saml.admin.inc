@@ -501,7 +501,7 @@ function islandora_saml_form_validate($form, &$form_state)
         $form_state['values']['saml_acs_urls'] = $acs_valid_urls;
         variable_set('saml_options_sp_acs_urls', $acs_urls);
 
-        if(!empty($acs_valid_urls)){
+        if(!empty($acs_invalid_urls)){
             form_set_error('name', t('Invalid urls: ' . $acs_invalid_urls));
         }
 
