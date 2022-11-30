@@ -476,7 +476,7 @@ function islandora_saml_form_validate($form, &$form_state)
         foreach ($acs_urls_explode as $acs_url) {
             // Remove all illegal characters from a url
             $url = filter_var($acs_url, FILTER_SANITIZE_URL);
-            if (valid_URL($url)) {
+            if (validate_url($url)) {
                 $acs_valid_urls[] = str_replace(' ', PHP_EOL, $url);
             } else {
                 form_set_error('name', t('Invalid url ' . $acs_url));
@@ -502,7 +502,7 @@ function islandora_saml_form_validate($form, &$form_state)
     }
 }
 
-function valid_URL($url){
+function validate_url($url){
     return preg_match('%^(?:(?:https?|ftp)://)(?:\S+(?::\S*)?@|\d{1,3}(?:\.\d{1,3}){3}|(?:(?:[a-z\d\x{00a1}-\x{ffff}]+-?)*[a-z\d\x{00a1}-\x{ffff}]+)(?:\.(?:[a-z\d\x{00a1}-\x{ffff}]+-?)*[a-z\d\x{00a1}-\x{ffff}]+)*(?:\.[a-z\x{00a1}-\x{ffff}]{2,6}))(?::\d+)?(?:[^\s]*)?$%iu', $url);
 }
 
