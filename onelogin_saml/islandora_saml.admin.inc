@@ -470,16 +470,14 @@ function islandora_saml_form_validate($form, &$form_state)
     if (!empty($form_state['values']['saml_acs_urls'])) {
         $acs_urls = $form_state['values']['saml_acs_urls'];
 
-        if ( preg_match('/\s/',$acs_urls) ){
-            form_set_error('name', t('Remove all whitespace in the ACS URL\'s '.$acs_urls));
-        }
+
         $acs_urls_explode = explode("\n", $acs_urls);
         $acs_valid_urls =[];
         foreach ($acs_urls_explode as $acs_url) {
             // Remove all illegal characters from a url
             $url = filter_var($acs_url, FILTER_SANITIZE_URL);
             if (filter_var($url, FILTER_VALIDATE_URL) ) {
-                $acs_valid_urls[] = $url;
+                $acs_valid_urls[] = str_replace(' ', PHP_EOL, $url);
             }else{
                 form_set_error('name', t('Invalid url '.$acs_url));
             }
@@ -487,7 +485,7 @@ function islandora_saml_form_validate($form, &$form_state)
         $acs_urls ="";
         if(!empty($acs_valid_urls)){
             foreach ($acs_valid_urls as $acs_url) {
-                $acs_urls .= $acs_url."\n";
+                $acs_urls .=(next($acs_valid_urls)) ? $acs_url."\n" : $acs_url;
 
             }
         }
