@@ -472,26 +472,37 @@ function islandora_saml_form_validate($form, &$form_state)
 
 
         $acs_urls_explode = explode("\n", $acs_urls);
-        $acs_valid_urls =[];
+        $acs_valid_urls = [];
         foreach ($acs_urls_explode as $acs_url) {
             // Remove all illegal characters from a url
             $url = filter_var($acs_url, FILTER_SANITIZE_URL);
-            if (filter_var($url, FILTER_VALIDATE_URL) ) {
+            if (valid_URL($url)) {
                 $acs_valid_urls[] = str_replace(' ', PHP_EOL, $url);
-            }else{
-                form_set_error('name', t('Invalid url '.$acs_url));
+            } else {
+                form_set_error('name', t('Invalid url ' . $acs_url));
             }
         }
-        $acs_urls ="";
-        if(!empty($acs_valid_urls)){
-            foreach ($acs_valid_urls as $acs_url) {
-                $acs_urls .=(next($acs_valid_urls)) ? $acs_url."\n" : $acs_url;
+        $acs_urls = "";
+        if (!empty($acs_valid_urls)) {
 
+            $len = count($acs_valid_urls);
+            foreach ($acs_valid_urls as $index => $acs_url) {
+
+                if ($index == $len - 1) {
+                    $acs_urls .= $acs_url;
+                } else {
+                    $acs_urls .= $acs_url . "\n";
+                }
             }
+
         }
         $form_state['values']['saml_acs_urls'] = $acs_valid_urls;
         variable_set('saml_options_sp_acs_urls', $acs_urls);
 
     }
+}
+
+function valid_URL($url){
+    return preg_match('%^(?:(?:https?|ftp)://)(?:\S+(?::\S*)?@|\d{1,3}(?:\.\d{1,3}){3}|(?:(?:[a-z\d\x{00a1}-\x{ffff}]+-?)*[a-z\d\x{00a1}-\x{ffff}]+)(?:\.(?:[a-z\d\x{00a1}-\x{ffff}]+-?)*[a-z\d\x{00a1}-\x{ffff}]+)*(?:\.[a-z\x{00a1}-\x{ffff}]{2,6}))(?::\d+)?(?:[^\s]*)?$%iu', $url);
 }
 
