@@ -167,8 +167,6 @@ METADATA_TEMPLATE;
                 $acs_count++;
             }
 
-        }
-
         $spEntityId = htmlspecialchars($sp['entityId'], ENT_QUOTES);
         $acsUrl = htmlspecialchars($sp['assertionConsumerService']['url'], ENT_QUOTES);
         $metadata = <<<METADATA_TEMPLATE
