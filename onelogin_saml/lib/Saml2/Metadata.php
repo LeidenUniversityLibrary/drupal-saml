@@ -157,7 +157,7 @@ METADATA_TEMPLATE;
         foreach($multiple_acs_urls as $acsUrl){
 
             $acsUrl = htmlspecialchars($acsUrl, ENT_QUOTES);
-            $strMultipleAssertionConsumerService = <<<METADATA_TEMPLATE
+            $strMultipleAssertionConsumerService .= <<<METADATA_TEMPLATE
 <md:AssertionConsumerService Binding="{$sp['assertionConsumerService']['binding']}"
                                      Location="{$acsUrl}"
                                      index="{$acs_count}" />
