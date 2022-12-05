@@ -35,7 +35,7 @@ function islandora_saml_form()
         '#title' => t('Assertion Consumer Service (ACS)'),
         '#default_value' => variable_get('saml_options_sp_acs_urls', ''),
         '#description' => t('Add additional ACS URL\'s. Seperate with line beak'),
-        '#required' => TRUE
+        '#required' => FALSE
     );
 
 
