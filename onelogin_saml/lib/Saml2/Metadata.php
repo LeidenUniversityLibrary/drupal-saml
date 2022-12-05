@@ -153,16 +153,20 @@ ATTRIBUTEVALUE;
         </md:AttributeConsumingService>
 METADATA_TEMPLATE;
         }
+
         $acs_count =1;
         foreach($multiple_acs_urls as $acsUrl){
 
-            $acsUrl = htmlspecialchars($acsUrl, ENT_QUOTES);
-            $strMultipleAssertionConsumerService .= <<<METADATA_TEMPLATE
+            if(!empty($acsUrl)){
+                $acsUrl = htmlspecialchars($acsUrl, ENT_QUOTES);
+                $strMultipleAssertionConsumerService .= <<<METADATA_TEMPLATE
 <md:AssertionConsumerService Binding="{$sp['assertionConsumerService']['binding']}"
                                      Location="{$acsUrl}"
                                      index="{$acs_count}" />
 METADATA_TEMPLATE;
-            $acs_count++;
+                $acs_count++;
+            }
+
         }
 
         $spEntityId = htmlspecialchars($sp['entityId'], ENT_QUOTES);
