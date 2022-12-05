@@ -506,6 +506,10 @@ function islandora_saml_form_validate($form, &$form_state)
         }
 
     }
+    else{
+        $form_state['values']['saml_acs_urls'] = '';
+        variable_set('saml_options_sp_acs_urls', '');
+    }
 }
 
 function validate_url($url){
