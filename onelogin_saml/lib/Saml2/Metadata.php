@@ -153,7 +153,6 @@ ATTRIBUTEVALUE;
         </md:AttributeConsumingService>
 METADATA_TEMPLATE;
         }
-
         $acs_count =1;
         foreach($multiple_acs_urls as $acsUrl){
 
@@ -166,6 +165,8 @@ METADATA_TEMPLATE;
 METADATA_TEMPLATE;
                 $acs_count++;
             }
+
+        }
 
         $spEntityId = htmlspecialchars($sp['entityId'], ENT_QUOTES);
         $acsUrl = htmlspecialchars($sp['assertionConsumerService']['url'], ENT_QUOTES);
