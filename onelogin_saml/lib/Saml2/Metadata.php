@@ -38,6 +38,8 @@ class OneLogin_Saml2_Metadata
 
         $sls = '';
 
+        $multiple_acs_urls = explode("\n", $sp['multipleAssertionConsumerService']);
+
         if (isset($sp['singleLogoutService'])) {
             $slsUrl = htmlspecialchars($sp['singleLogoutService']['url'], ENT_QUOTES);
             $sls = <<<SLS_TEMPLATE
@@ -152,8 +154,9 @@ ATTRIBUTEVALUE;
 METADATA_TEMPLATE;
         }
         $acs_count =1;
-        foreach($sp['multipleAssertionConsumerService'] as $acsUrl){
+        foreach($multiple_acs_urls as $acsUrl){
 
+            $acsUrl = htmlspecialchars($acsUrl, ENT_QUOTES);
             $strMultipleAssertionConsumerService = <<<METADATA_TEMPLATE
 <md:AssertionConsumerService Binding="{$sp['assertionConsumerService']['binding']}"
                                      Location="{$acsUrl}"
